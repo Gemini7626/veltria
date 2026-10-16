@@ -70,7 +70,7 @@ const status=document.getElementById("status");
 const more=document.getElementById("more");
 const query=document.getElementById("query");
 const sort=document.getElementById("sort");
-let type="",next=null,requestId=0;
+let type="",next=null,requestId=0,loading=false;
 const seenIds=new Set();
 let nextCursor=null;
 
@@ -112,7 +112,9 @@ function render(model){
 }
 
 async function load(append=false){
+  if(append && loading)return;
   const id=++requestId;
+  loading=true;
   if(!append){ results.replaceChildren(); next=null; nextCursor=null; seenIds.clear(); }
   more.hidden=true;
   status.textContent="Đang tải model...";
@@ -124,9 +126,12 @@ async function load(append=false){
   if(query.value.trim())params.set("query",query.value.trim());
 
   try{
-    const response=await fetch(
-      API+"?"+params.toString()+(append&&query.value.trim()&&nextCursor?"&cursor="+encodeURIComponent(nextCursor):"&page="+(append&&next?next:1))
-    );
+    if(append){
+      if(nextCursor) params.set("cursor",nextCursor);
+      else if(next) params.set("page",String(next));
+      else { loading=false; return; }
+    }
+    const response=await fetch(API+"?"+params.toString());
     if(!response.ok)throw new Error("HTTP "+response.status);
     const data=await response.json();
     if(id!==requestId)return;
@@ -138,13 +143,16 @@ async function load(append=false){
       render(model);
     }
     nextCursor=data.nextCursor||null;
-    next=data.hasMore && (!query.value.trim() || nextCursor) ? Number(data.page)+1 : null;
-    more.hidden=!next;
+    next=data.hasMore ? (data.nextPage || (nextCursor ? null : Number(data.page)+1)) : null;
+    if(!data.hasMore || (!nextCursor && !next)) next=null;
+    more.hidden=!(nextCursor || next);
+    loading=false;
     status.textContent=results.children.length
       ? "Đã hiển thị "+results.children.length+" model công khai."
       : "Chưa tìm thấy model phù hợp.";
   }catch(err){
     if(id!==requestId)return;
+    loading=false;
     status.replaceChildren();
     status.append("Không thể tải API Civitai lúc này. ");
     const link=el("a","","Mở Civitai");
@@ -169,7 +177,7 @@ document.querySelectorAll("[data-type]").forEach(btn=>{
   });
 });
 sort.addEventListener("change",()=>load());
-more.addEventListener("click",()=>{if(next)load(true)});
+more.addEventListener("click",()=>{if(nextCursor || next)load(true)});
 load();
 </script>
 </body>

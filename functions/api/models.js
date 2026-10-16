@@ -43,21 +43,17 @@ export async function onRequestGet({ request, env }) {
     params.set("sort", sort);
   }
 
-  const page = Number(input.searchParams.get("page") || "1");
-  if (!Number.isSafeInteger(page) || page < 1 || page > 100) {
-    return json({ error: "Trang không hợp lệ." }, 400);
-  }
-
-// Civitai không hỗ trợ page khi tìm kiếm bằng query.
-if (query) {
+  // Civitai pagination: prefer cursor returned by nextPage.
   const cursor = input.searchParams.get("cursor");
-  if (cursor && cursor.length <= 500) {
+  const page = Number(input.searchParams.get("page") || "1");
+  if (cursor) {
+    if (cursor.length > 1000) return json({error:"Cursor không hợp lệ."},400);
     params.set("cursor", cursor);
+  } else if (!query) {
+    if (!Number.isSafeInteger(page) || page < 1 || page > 1000)
+      return json({error:"Trang không hợp lệ."},400);
+    params.set("page", String(page));
   }
-} else {
-  params.set("page", String(page));
-}
-
 
   const headers = { Accept: "application/json" };
 
@@ -101,16 +97,23 @@ if (query) {
         };
       });
 
+    const nextPageUrl = data.metadata?.nextPage || "";
+    let nextCursor = data.metadata?.nextCursor || null;
+    let nextPage = null;
+    if (nextPageUrl) {
+      try {
+        const u = new URL(nextPageUrl, API);
+        nextCursor ||= u.searchParams.get("cursor");
+        const n = Number(u.searchParams.get("page"));
+        if (Number.isSafeInteger(n) && n > 0) nextPage = n;
+      } catch {}
+    }
     return json({
       items,
       page,
-      hasMore: Boolean(data.metadata?.nextPage),
-    nextCursor: query
-      ? (data.metadata?.nextCursor || (() => {
-          try { return new URL(data.metadata?.nextPage || "").searchParams.get("cursor"); }
-          catch { return null; }
-        })())
-      : null
+      nextCursor,
+      nextPage,
+      hasMore: Boolean(nextCursor || nextPage)
     });
   } catch {
     return json({
