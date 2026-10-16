@@ -10,6 +10,11 @@ export async function onRequestGet({params,env}){
   const m=await res.json();
   if(m.nsfw)return json({error:"Model không khả dụng ở khu vực công khai"},403);
   const versions=(m.modelVersions||[]).map(v=>({id:v.id,name:v.name,baseModel:v.baseModel,images:(v.images||[]).filter(i=>i.nsfwLevel===1||i.nsfw==="None").slice(0,8).map(i=>i.url)}));
-  return json({id:m.id,name:m.name,type:m.type,creator:m.creator?.username||"",description:m.description||"",tags:m.tags||[],versions,url:`https://civitai.com/models/${id}`});
+  return json({id:m.id,name:m.name,type:m.type,creator:m.creator?.username||"",description:m.description||"",tags:m.tags||[],versions,
+    previewStatus: versions.some(v=>v.images.length)
+      ? "available"
+      : (m.modelVersions||[]).some(v=>(v.images||[]).length)
+        ? "restricted" : "missing",
+    url:`https://civitai.com/models/${id}`});
  }catch{return json({error:"Không kết nối được Civitai"},502)}
 }

@@ -91,6 +91,10 @@ export async function onRequestGet({ request, env }) {
   ).map(i => i.url)
 )].slice(0, 8);
 const safeImage = safeImages[0] || null;
+const totalImages = images.length;
+const previewStatus = safeImages.length
+  ? "available"
+  : totalImages ? "restricted" : "missing";
 
         return {
           id: m.id,
@@ -99,6 +103,8 @@ const safeImage = safeImages[0] || null;
           creator: m.creator?.username || "",
           image: safeImage,
 previewImages: safeImages,
+          previewStatus,
+          totalImages,
           url: `https://civitai.com/models/${m.id}`
         };
       });

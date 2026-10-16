@@ -114,7 +114,8 @@ function render(model){
   }else{
     const placeholder=el("div");
     placeholder.style.cssText="aspect-ratio:3/4;display:grid;place-items:center;background:#29203e;color:#c5b1e8";
-    placeholder.textContent="✦ VELTRIA";
+    placeholder.textContent=model.previewStatus==="restricted"
+      ? "🔒 Ảnh giới hạn" : "✦ VELTRIA";
     card.append(placeholder);
   }
 
