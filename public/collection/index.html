@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VELTRIA Collection</title>
+<link rel="stylesheet" href="/assets/css/collection.css">
+<script src="/assets/js/collection.js" defer></script>
+</head>
+<body>
+<main>
+<a href="/">← VELTRIA</a>
+<h1>✦ My Collection</h1>
+<p class="sub">Bộ sưu tập ảnh, video và âm thanh của bạn.</p>
+
+<div class="tabs">
+<button class="active" data-filter="all">Tất cả</button>
+<button data-filter="image">Ảnh</button>
+<button data-filter="video">Video</button>
+<button data-filter="audio">Âm thanh</button>
+</div>
+
+<label class="upload">
+＋ Thêm tác phẩm từ thiết bị
+<input id="files" type="file"
+accept="image/*,video/*,audio/*" multiple>
+</label>
+
+<section id="gallery" class="gallery"></section>
+<p id="empty" class="sub">Chưa có tác phẩm nào.</p>
+</main>
+</body>
+</html>
