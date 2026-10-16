@@ -81,8 +81,8 @@ function el(tag,cls,text){
 
 function render(model){
   const card=el("a","card");
-  card.href=model.url;
-  card.target="_blank";
+  card.href="/models/detail/?id="+encodeURIComponent(model.id);
+  card.removeAttribute("target");
   card.rel="noopener noreferrer";
 
   const image=model.image;
@@ -93,6 +93,7 @@ function render(model){
     img.alt=model.name || "Model";
     img.loading="lazy";
     img.referrerPolicy="no-referrer";
+    img.onerror=()=>{img.onerror=null;img.src="data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="100%" height="100%" fill="#29203e"/><text x="50%" y="50%" fill="#c5b1e8" text-anchor="middle" font-size="25">VELTRIA</text></svg>');};
     card.append(img);
   }else{
     const placeholder=el("div");
