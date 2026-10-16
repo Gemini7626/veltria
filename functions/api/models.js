@@ -106,7 +106,10 @@ if (query) {
       page,
       hasMore: Boolean(data.metadata?.nextPage),
     nextCursor: query
-      ? (data.metadata?.nextCursor || null)
+      ? (data.metadata?.nextCursor || (() => {
+          try { return new URL(data.metadata?.nextPage || "").searchParams.get("cursor"); }
+          catch { return null; }
+        })())
       : null
     });
   } catch {

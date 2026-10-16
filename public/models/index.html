@@ -71,6 +71,8 @@ const more=document.getElementById("more");
 const query=document.getElementById("query");
 const sort=document.getElementById("sort");
 let type="",next=null,requestId=0;
+const seenIds=new Set();
+let nextCursor=null;
 
 function el(tag,cls,text){
   const node=document.createElement(tag);
@@ -111,10 +113,7 @@ function render(model){
 
 async function load(append=false){
   const id=++requestId;
-  if(!append){
-    results.replaceChildren();
-    next=null;
-  }
+  if(!append){ results.replaceChildren(); next=null; nextCursor=null; seenIds.clear(); }
   more.hidden=true;
   status.textContent="Đang tải model...";
   const params=new URLSearchParams({
@@ -126,15 +125,20 @@ async function load(append=false){
 
   try{
     const response=await fetch(
-      API+"?"+params.toString()+"&page="+(append&&next?next:1)
+      API+"?"+params.toString()+(append&&query.value.trim()&&nextCursor?"&cursor="+encodeURIComponent(nextCursor):"&page="+(append&&next?next:1))
     );
     if(!response.ok)throw new Error("HTTP "+response.status);
     const data=await response.json();
     if(id!==requestId)return;
 
     const items=data.items||[];
-    items.forEach(render);
-    next=data.hasMore ? (Number(data.page)+1) : null;
+    for(const model of items){
+      if(model.id==null || seenIds.has(String(model.id))) continue;
+      seenIds.add(String(model.id));
+      render(model);
+    }
+    nextCursor=data.nextCursor||null;
+    next=data.hasMore && (!query.value.trim() || nextCursor) ? Number(data.page)+1 : null;
     more.hidden=!next;
     status.textContent=results.children.length
       ? "Đã hiển thị "+results.children.length+" model công khai."
