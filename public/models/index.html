@@ -64,7 +64,7 @@ button{background:linear-gradient(120deg,#7938ef,#bd44e9);border:0;color:white;b
 </div>
 </main>
 <script>
-const API="https://civitai.com/api/v1/models";
+const API="/api/models";
 const results=document.getElementById("results");
 const status=document.getElementById("status");
 const more=document.getElementById("more");
@@ -81,18 +81,15 @@ function el(tag,cls,text){
 
 function render(model){
   const card=el("a","card");
-  card.href="https://civitai.com/models/"+encodeURIComponent(model.id);
+  card.href=model.url;
   card.target="_blank";
   card.rel="noopener noreferrer";
 
-  const version=model.modelVersions?.[0];
-  const image=version?.images?.find(i=>
-    i.url && i.nsfwLevel===1
-  );
+  const image=model.image;
 
   if(image){
     const img=el("img");
-    img.src=image.url;
+    img.src=image;
     img.alt=model.name || "Model";
     img.loading="lazy";
     img.referrerPolicy="no-referrer";
@@ -120,28 +117,23 @@ async function load(append=false){
   more.hidden=true;
   status.textContent="Đang tải model...";
   const params=new URLSearchParams({
-    limit:"20",
-    nsfw:"false",
+    mode:"public",
     sort:sort.value
   });
-  if(type)params.set("types",type);
+  if(type)params.set("type",type);
   if(query.value.trim())params.set("query",query.value.trim());
 
   try{
     const response=await fetch(
-      append&&next ? next : API+"?"+params.toString()
+      API+"?"+params.toString()+"&page="+(append&&next?next:1)
     );
     if(!response.ok)throw new Error("HTTP "+response.status);
     const data=await response.json();
     if(id!==requestId)return;
 
-    const items=(data.items||[]).filter(m=>
-      !m.nsfw && (m.modelVersions||[]).some(v=>
-        (v.images||[]).some(i=>i.nsfwLevel===1)
-      )
-    );
+    const items=data.items||[];
     items.forEach(render);
-    next=data.metadata?.nextPage||null;
+    next=data.hasMore ? (Number(data.page)+1) : null;
     more.hidden=!next;
     status.textContent=results.children.length
       ? "Đã hiển thị "+results.children.length+" model công khai."
