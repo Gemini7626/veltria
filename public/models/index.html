@@ -95,7 +95,21 @@ function render(model){
     img.alt=model.name || "Model";
     img.loading="lazy";
     img.referrerPolicy="no-referrer";
-    img.onerror=()=>{img.onerror=null;img.src="data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="100%" height="100%" fill="#29203e"/><text x="50%" y="50%" fill="#c5b1e8" text-anchor="middle" font-size="25">VELTRIA</text></svg>');};
+
+      const candidates = Array.isArray(model.previewImages)
+        && model.previewImages.length
+        ? model.previewImages : [model.image];
+      let fallbackIndex = 0;
+      img.onerror = () => {
+        fallbackIndex++;
+        if (fallbackIndex < candidates.length) {
+          img.src = candidates[fallbackIndex];
+          return;
+        }
+        img.onerror = null;
+        img.src = "data:image/svg+xml," +
+          encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="100%" height="100%" fill="#29203e"/><text x="50%" y="50%" fill="#c5b1e8" text-anchor="middle" font-size="25">VELTRIA</text></svg>');
+      };
     card.append(img);
   }else{
     const placeholder=el("div");

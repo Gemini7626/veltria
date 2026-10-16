@@ -83,16 +83,22 @@ export async function onRequestGet({ request, env }) {
         const images = (m.modelVersions || [])
           .flatMap(v => v.images || []);
 
-        const safeImage = images.find(i =>
-          i.nsfwLevel === 1 || i.nsfw === "None"
-        );
+        const safeImages = [...new Set(
+  images.filter(i =>
+    (i.nsfwLevel === 1 || i.nsfw === "None") &&
+    typeof i.url === "string" &&
+    i.url.startsWith("https://")
+  ).map(i => i.url)
+)].slice(0, 8);
+const safeImage = safeImages[0] || null;
 
         return {
           id: m.id,
           name: m.name,
           type: m.type,
           creator: m.creator?.username || "",
-          image: safeImage?.url || null,
+          image: safeImage,
+previewImages: safeImages,
           url: `https://civitai.com/models/${m.id}`
         };
       });
