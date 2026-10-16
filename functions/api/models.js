@@ -94,7 +94,7 @@ const safeImage = safeImages[0] || null;
 const totalImages = images.length;
 const previewStatus = safeImages.length
   ? "available"
-  : totalImages ? "restricted" : "missing";
+  : totalImages ? "restricted" : "unknown";
 
         return {
           id: m.id,
