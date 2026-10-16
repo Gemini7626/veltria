@@ -1,0 +1,27 @@
+
+/* VELTRIA Navigation v2 */
+
+.veltria-home-link {
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: .4px;
+  padding: 14px 18px;
+  position: relative;
+  z-index: 20;
+}
+
+.veltria-home-link:hover {
+  color: #d5b5ff;
+}
+
+.bottom-nav {
+  display: none !important;
+}
+
+body {
+  padding-bottom: 0 !important;
+}
