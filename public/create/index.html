@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create | VELTRIA</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#100d1c;color:#f7f2ff;font-family:system-ui,sans-serif}
+main{max-width:760px;margin:auto;padding:22px 16px 110px}
+.back{color:#c9b7f8;text-decoration:none;font-size:14px}
+h1{font-size:32px;margin:26px 0 8px}
+p{color:#b9b0cc;line-height:1.5}
+.hero{padding:24px;border-radius:24px;background:linear-gradient(125deg,#6335bc,#27214e 65%,#171326);margin:22px 0}
+.hero h2{font-size:25px;margin:0 0 8px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{min-width:0;min-height:145px;padding:18px;border:1px solid #403552;border-radius:20px;background:#201b30;text-decoration:none;color:white;display:flex;flex-direction:column;justify-content:space-between}
+.card span{font-size:30px}
+.card strong{font-size:17px}
+.card small{font-size:12px;color:#bfb5d0}
+.image{background:linear-gradient(145deg,#6035b5,#241a40)}
+.video{background:linear-gradient(145deg,#9a346e,#2c1a35)}
+.audio{background:linear-gradient(145deg,#176f82,#172b3b)}
+.models{background:linear-gradient(145deg,#554080,#201b30)}
+.section{font-size:18px;margin:28px 0 14px}
+.note{font-size:13px;margin-top:24px}
+@media(max-width:360px){.card{padding:14px;min-height:130px}.card strong{font-size:15px}}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="/">← VELTRIA</a>
+<section class="hero">
+<h2>✦ Create Studio</h2>
+<p>Tạo hình ảnh, video và âm thanh trong không gian sáng tạo của bạn.</p>
+</section>
+<h1>Bạn muốn tạo gì?</h1>
+<p>Chọn công cụ để bắt đầu.</p>
+<div class="grid">
+<a class="card image" href="/aurora/studio/image/">
+<span>✦</span><strong>Image Studio</strong><small>Tạo và chỉnh sửa ảnh</small>
+</a>
+<a class="card video" href="/aurora/studio/video/">
+<span>▷</span><strong>Video Studio</strong><small>Tạo video AI</small>
+</a>
+<a class="card audio" href="/aurora/studio/audio/">
+<span>♫</span><strong>Audio Studio</strong><small>Âm thanh và giọng nói</small>
+</a>
+<a class="card models" href="/aurora/models/">
+<span>◇</span><strong>Model Hub</strong><small>Khám phá model AI</small>
+</a>
+</div>
+<h2 class="section">Không gian sáng tạo</h2>
+<div class="grid">
+<a class="card" href="/aurora/">
+<span>☀</span><strong>AURORA</strong><small>Sáng tạo công khai</small>
+</a>
+<a class="card" href="/obsidian/">
+<span>☾</span><strong>OBSIDIAN</strong><small>Khu vực giới hạn 18+</small>
+</a>
+</div>
+<p class="note">Các công cụ AI vẫn đang phát triển. OBSIDIAN cần kiểm tra độ tuổi và quyền truy cập ở máy chủ trước khi sử dụng.</p>
+</main>
+</body>
+</html>
