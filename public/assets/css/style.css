@@ -202,3 +202,87 @@ main {
     font-size: 15px;
   }
 }
+
+/* VELTRIA Mobile Compact v1 */
+
+@media (max-width: 600px) {
+
+  body {
+    font-size: 14px;
+  }
+
+  header {
+    padding: 14px 16px;
+  }
+
+  header .logo {
+    font-size: 21px;
+  }
+
+  .hero,
+  .obs-hero {
+    padding: 24px 20px !important;
+    border-radius: 20px !important;
+    margin-bottom: 22px;
+  }
+
+  .hero h1,
+  .obs-hero h1 {
+    font-size: clamp(25px, 7vw, 34px) !important;
+    line-height: 1.15;
+    margin: 10px 0;
+  }
+
+  .hero p,
+  .obs-hero p {
+    font-size: 14px !important;
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: 21px;
+    margin: 20px 0 14px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .card {
+    padding: 15px !important;
+    border-radius: 16px !important;
+    min-height: 125px;
+  }
+
+  .card span {
+    font-size: 22px;
+  }
+
+  .card h3 {
+    font-size: 15px !important;
+    line-height: 1.3;
+    margin: 8px 0;
+  }
+
+  .card p {
+    font-size: 12px !important;
+    line-height: 1.45;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px !important;
+    text-decoration: none;
+    padding: 8px 12px;
+    margin: 4px 0 14px;
+    border: 1px solid #393047;
+    border-radius: 999px;
+  }
+
+  .mobile-nav {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}
+
