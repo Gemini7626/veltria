@@ -47,7 +47,17 @@ export async function onRequestGet({ request, env }) {
   if (!Number.isSafeInteger(page) || page < 1 || page > 100) {
     return json({ error: "Trang không hợp lệ." }, 400);
   }
+
+// Civitai không hỗ trợ page khi tìm kiếm bằng query.
+if (query) {
+  const cursor = input.searchParams.get("cursor");
+  if (cursor && cursor.length <= 500) {
+    params.set("cursor", cursor);
+  }
+} else {
   params.set("page", String(page));
+}
+
 
   const headers = { Accept: "application/json" };
 
@@ -94,7 +104,10 @@ export async function onRequestGet({ request, env }) {
     return json({
       items,
       page,
-      hasMore: Boolean(data.metadata?.nextPage)
+      hasMore: Boolean(data.metadata?.nextPage),
+    nextCursor: query
+      ? (data.metadata?.nextCursor || null)
+      : null
     });
   } catch {
     return json({
