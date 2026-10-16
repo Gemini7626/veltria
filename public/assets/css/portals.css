@@ -1,0 +1,128 @@
+/* VELTRIA v1.2 - Independent Portals */
+
+body.aurora {
+  --portal:#b78cff;
+  --portal-dark:#6541ad;
+  background:#100f1b;
+}
+
+body.obsidian {
+  --portal:#ff648f;
+  --portal-dark:#651a39;
+  background:#100b12;
+}
+
+.portal-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:18px 20px;
+  border-bottom:1px solid #342a40;
+}
+
+.portal-top a {
+  color:var(--portal);
+  text-decoration:none;
+  font-weight:800;
+}
+
+.portal-label {
+  color:#b8afc4;
+  font-size:12px;
+}
+
+.portal-hero {
+  padding:42px 24px;
+  border-radius:24px;
+  background:linear-gradient(
+    135deg,
+    var(--portal-dark),
+    #171322
+  );
+}
+
+.portal-hero h1 {
+  font-size:clamp(36px,9vw,64px);
+  margin:0 0 12px;
+}
+
+.portal-hero p {
+  color:#e6deee;
+  line-height:1.6;
+}
+
+.portal-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.portal-grid .card {
+  min-height:150px;
+}
+
+.portal-grid .card h3 {
+  color:#f5efff;
+}
+
+.portal-grid .card:hover {
+  border-color:var(--portal);
+}
+
+@media(min-width:760px) {
+  .portal-grid {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+/* VELTRIA Mobile Navigation */
+
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  background: rgba(18,16,27,.96);
+  border-top: 1px solid #3b3048;
+  padding: 9px 5px calc(9px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(14px);
+}
+
+.mobile-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: #b8afc8;
+  text-decoration: none;
+  font-size: 11px;
+  text-align: center;
+}
+
+.mobile-nav a span {
+  font-size: 23px;
+  line-height: 1;
+}
+
+.mobile-nav a.active {
+  color: var(--portal,#b78cff);
+}
+
+body.aurora,
+body.obsidian {
+  padding-bottom: 100px;
+}
+
+@media (min-width: 900px) {
+  .mobile-nav {
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid #3b3048;
+    border-radius: 20px 20px 0 0;
+  }
+}

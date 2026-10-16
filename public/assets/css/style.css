@@ -123,3 +123,82 @@ footer {
     font-size: 16px;
   }
 }
+
+/* VELTRIA v1.2 - Mobile UI */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  width: min(100%, 1100px);
+  margin: auto;
+  padding: 20px 16px 70px;
+}
+
+.hero {
+  border-radius: 24px;
+  padding: 38px 24px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.18);
+}
+
+.hero h1 {
+  font-size: clamp(32px, 7vw, 58px);
+  line-height: 1.12;
+  letter-spacing: -1px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+
+.card {
+  min-width: 0;
+  min-height: 165px;
+  padding: 18px;
+  border-radius: 18px;
+  transition: transform .2s, border-color .2s;
+}
+
+.card h3 {
+  font-size: 17px;
+  line-height: 1.35;
+  margin: 10px 0;
+}
+
+.card p {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.card:active {
+  transform: scale(.98);
+}
+
+.card:focus-visible {
+  outline: 2px solid #b78cff;
+  outline-offset: 3px;
+}
+
+@media (min-width: 760px) {
+  .grid {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  .card {
+    padding: 14px;
+  }
+
+  .card h3 {
+    font-size: 15px;
+  }
+}
