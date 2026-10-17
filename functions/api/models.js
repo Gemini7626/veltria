@@ -25,7 +25,7 @@ export async function onRequestGet({ request, env }) {
   const params = new URLSearchParams();
 
   params.set("limit", "40");
-  params.set("nsfw", "false");
+  // Model Hub: khong ep loc SFW
 
   const query = (input.searchParams.get("query") || "")
     .trim().slice(0, 100);
@@ -78,17 +78,13 @@ export async function onRequestGet({ request, env }) {
 
     // Chỉ xuất model và ảnh xem trước SFW.
     const items = (data.items || [])
-      .filter(m => !m.nsfw)
+      .filter(m => m && m.id)
       .map(m => {
         const images = (m.modelVersions || [])
           .flatMap(v => v.images || []);
 
         const safeImages = [...new Set(
-  images.filter(i =>
-    (i.nsfwLevel === 1 || i.nsfwLevel === 2 || i.nsfw === "None") &&
-    typeof i.url === "string" &&
-    i.url.startsWith("https://")
-  ).map(i => i.url)
+  images.filter(i => typeof i.url === "string" && i.url.startsWith("https://")).map(i => i.url)
 )].slice(0, 8);
 const safeImage = safeImages[0] || null;
 const totalImages = images.length;
