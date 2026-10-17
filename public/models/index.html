@@ -108,17 +108,8 @@ h1{letter-spacing:-.045em;line-height:1.08}
 <button type="submit">Tìm</button>
 </form>
 
-<div class="filters">
-<button type="button" class="active" data-type="">Tất cả</button>
-<button type="button" data-type="Checkpoint">Checkpoint</button>
-<button type="button" data-type="LORA">LoRA</button>
-<select id="sort" aria-label="Sắp xếp">
-<option value="Relevance">Liên quan nhất</option>
-<option value="Most Downloaded">Phổ biến</option>
-<option value="Newest">Mới nhất</option>
-<option value="Highest Rated">Đánh giá cao</option>
-</select>
-</div>
+
+
 
 <!-- VELTRIA EXTENDED MODEL TYPES -->
 <div id="vel-model-types" style="margin:14px 0 22px">
@@ -142,6 +133,15 @@ h1{letter-spacing:-.045em;line-height:1.08}
     <option value="Wildcards">Wildcards</option>
     <option value="Other">Other</option>
   </select>
+</div>
+<div class="filters">
+
+<select id="sort" aria-label="Sắp xếp">
+<option value="Relevance">Liên quan nhất</option>
+<option value="Most Downloaded">Phổ biến</option>
+<option value="Newest">Mới nhất</option>
+<option value="Highest Rated">Đánh giá cao</option>
+</select>
 </div>
 <div class="v3-tools"><button id="v3FavOnly" type="button" aria-pressed="false">♡ Đã lưu</button><span id="v3FavCount" class="v3-count"></span></div>
 <p class="status" id="status">Đang tải danh sách model...</p>
@@ -584,23 +584,9 @@ function v471RestoreState(){
 
   query.value = params.get("q") || "";
 
-  const requestedType = params.get("type") || "";
-  const buttons = [
-    ...document.querySelectorAll("[data-type]")
-  ];
+  type = "";
 
-  type = buttons.some(
-    b => b.dataset.type === requestedType
-  ) ? requestedType : "";
-
-  buttons.forEach(b => {
-    b.classList.toggle(
-      "active",
-      b.dataset.type === type
-    );
-  });
-
-  const requestedSort = params.get("sort");
+    const requestedSort = params.get("sort");
 
   if(
     requestedSort &&
@@ -617,15 +603,7 @@ document.getElementById("searchForm").addEventListener("submit",e=>{
   v471SaveState();
   load();
 });
-document.querySelectorAll("[data-type]").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    document.querySelectorAll("[data-type]").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    type=btn.dataset.type;
-    v471SaveState();
-    load();
-  });
-});
+
 sort.addEventListener("change",()=>{
   v471SaveState();
   load();
