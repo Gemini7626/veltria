@@ -203,6 +203,21 @@ function showVersion(){
  if(!v){$("base").textContent="Model chưa có phiên bản công khai.";$("hero").src=fallback;return;}
  $("base").textContent="Base model: "+(v.baseModel||"Không rõ");
  v6Items=v6Media(v);
+
+// Fallback: dùng ảnh từ Images API khi version không có ảnh
+if(!v6Items.length && Array.isArray(model.previewImages)){
+ const seen=new Set();
+
+ v6Items=model.previewImages
+  .filter(url=>typeof url==="string" && url.startsWith("https://"))
+  .filter(url=>{
+   if(seen.has(url))return false;
+   seen.add(url);
+   return true;
+  })
+  .map(url=>({url,type:"image"}));
+}
+
  if(!v6Items.length){
   $("hero").onerror=null;$("hero").src=fallback;
   const note=document.createElement("p");note.className="sub";
