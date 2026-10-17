@@ -170,7 +170,7 @@ function render(model){
   const image=model.image;
   // VELTRIA image repair: resolve missing list previews from the detail API.
   // Never use unfiltered upstream image URLs.
-  if(!image && model.previewStatus !== "restricted" && !model.v4SkipRecovery && model.id != null){
+  if(!image && model.id != null){
     v4ResolvePreview(model,card);
   }
 
