@@ -371,13 +371,9 @@ async function load(append=false){
     if(id!==requestId)return;
 
     const items=data.items||[];
-    let v4MissingBudget=12;
     for(const model of items){
       if(model.id==null || seenIds.has(String(model.id))) continue;
       seenIds.add(String(model.id));
-      if(!model.image && model.previewStatus!=="restricted") {
-        if(v4MissingBudget--<=0) model.v4SkipRecovery=true;
-      }
       render(model);
     }
     v3Update();
