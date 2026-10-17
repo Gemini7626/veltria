@@ -5,7 +5,7 @@ export async function onRequestGet({params,env}){
  try{
   const headers={Accept:"application/json"};
   if(env.CIVITAI_API_KEY)headers.Authorization=`Bearer ${env.CIVITAI_API_KEY}`;
-  const res=await fetch(`https://civitai.com/api/v1/models/${id}`,{headers,signal:AbortSignal.timeout(12000)});
+  const res=await fetch(`https://civitai.red/api/v1/models/${id}`,{headers,signal:AbortSignal.timeout(12000)});
   if(!res.ok)return json({error:"Không tải được model",upstreamStatus:res.status},res.status===404?404:502);
   const m=await res.json();
   const versions=(m.modelVersions||[]).map(v=>({id:v.id,name:v.name,baseModel:v.baseModel,
@@ -69,7 +69,18 @@ images:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https
     }
   }
 
-  return json({imageSource,totalImages,
+  return json({
+    technical: {
+      modelType: m.type || null,
+      nsfw: m.nsfw ?? null,
+      downloadCount: m.stats?.downloadCount ?? null,
+      thumbsUpCount: m.stats?.thumbsUpCount ?? null,
+      rating: m.stats?.rating ?? null,
+      ratingCount: m.stats?.ratingCount ?? null,
+      versionCount: versions.length,
+      publishedAt: m.publishedAt || null
+    },
+    imageSource,totalImages,
     image:previewImages[0]||null,
     previewImages,
     id:m.id,name:m.name,type:m.type,creator:m.creator?.username||"",description:m.description||"",tags:m.tags||[],versions,
@@ -77,6 +88,6 @@ images:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https
       ? "available"
       : sourceImages.length
         ? "unavailable" : "missing",
-    url:`https://civitai.com/models/${id}`});
+    url:`https://civitai.red/models/${id}`});
  }catch{return json({error:"Không kết nối được Civitai"},502)}
 }

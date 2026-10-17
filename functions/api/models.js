@@ -1,4 +1,4 @@
-const API = "https://civitai.com/api/v1/models";
+const API = "https://civitai.red/api/v1/models";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
