@@ -85,7 +85,7 @@ export async function onRequestGet({ request, env }) {
 
         const safeImages = [...new Set(
   images.filter(i =>
-    (i.nsfwLevel === 1 || i.nsfw === "None") &&
+    (i.nsfwLevel === 1 || i.nsfwLevel === 2 || i.nsfw === "None") &&
     typeof i.url === "string" &&
     i.url.startsWith("https://")
   ).map(i => i.url)
