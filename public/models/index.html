@@ -188,12 +188,45 @@ function render(model){
 
   function unavailable(){
     img.onerror=null;
-    img.replaceWith(
-      el("div","v2-placeholder",
-        model.previewStatus==="restricted"
-          ?"🔒 Ảnh giới hạn"
-          :"✦ Ảnh không tải được")
+
+    const fallback=el("div","v2-placeholder");
+    const message=el(
+      "div","",
+      "✦ Ảnh chưa tải được"
     );
+    const retry=el("button","");
+    retry.type="button";
+    retry.textContent="↻ Thử tải lại ảnh";
+
+    retry.style.cssText=[
+      "margin-top:12px",
+      "padding:8px 12px",
+      "border:1px solid #a855f7",
+      "border-radius:10px",
+      "background:#29163d",
+      "color:white",
+      "cursor:pointer"
+    ].join(";");
+
+    retry.onclick=event=>{
+      event.preventDefault();
+      event.stopPropagation();
+
+      index=0;
+      recovered=false;
+      img.onerror=()=>{void tryNext();};
+
+      fallback.replaceWith(img);
+
+      if(candidates.length){
+        img.src=candidates[0];
+      }else{
+        void tryNext();
+      }
+    };
+
+    fallback.append(message,retry);
+    img.replaceWith(fallback);
   }
 
   async function tryNext(){
