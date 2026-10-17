@@ -113,6 +113,7 @@ h1{letter-spacing:-.045em;line-height:1.08}
 <button type="button" data-type="Checkpoint">Checkpoint</button>
 <button type="button" data-type="LORA">LoRA</button>
 <select id="sort" aria-label="Sắp xếp">
+<option value="Relevance">Liên quan nhất</option>
 <option value="Most Downloaded">Phổ biến</option>
 <option value="Newest">Mới nhất</option>
 <option value="Highest Rated">Đánh giá cao</option>
@@ -427,6 +428,42 @@ async function showSavedModels(){
   " / "+v3Favorites.size+" model yêu thích.";
 }
 
+
+// VELTRIA v5 - relevance ranking
+function v5Normalize(value){
+  return String(value||"")
+    .normalize("NFD")
+    .replace(/[\\u0300-\\u036f]/g,"")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g," ")
+    .trim();
+}
+
+function v5Score(model,keyword){
+  const name=v5Normalize(model.name);
+  const creator=v5Normalize(model.creator);
+  const q=v5Normalize(keyword);
+
+  if(!q)return 0;
+  if(name===q)return 1000;
+  if(name.startsWith(q))return 850;
+  if(name.includes(q))return 700;
+
+  const words=q.split(" ").filter(Boolean);
+  const matched=words.filter(w=>name.includes(w));
+
+  let score=matched.length*80;
+
+  if(words.length && matched.length===words.length){
+    score+=200;
+  }
+
+  if(creator.includes(q))score+=100;
+  if(model.image)score+=5;
+
+  return score;
+}
+
 async function load(append=false){
  if(v3Only){await showSavedModels();return;}
   if(append && loading)return;
@@ -437,7 +474,9 @@ async function load(append=false){
   status.textContent="Đang tải model...";
   const params=new URLSearchParams({
     mode:"public",
-    sort:sort.value
+    sort:sort.value==="Relevance"
+      ?"Most Downloaded"
+      :sort.value
   });
   if(type)params.set("type",type);
   if(query.value.trim())params.set("query",query.value.trim());
@@ -453,7 +492,14 @@ async function load(append=false){
     const data=await response.json();
     if(id!==requestId)return;
 
-    const items=data.items||[];
+    const items=[...(data.items||[])];
+
+    if(sort.value==="Relevance" && query.value.trim()){
+      const keyword=query.value.trim();
+      items.sort((a,b)=>
+        v5Score(b,keyword)-v5Score(a,keyword)
+      );
+    }
     for(const model of items){
       if(model.id==null || seenIds.has(String(model.id))) continue;
       seenIds.add(String(model.id));
