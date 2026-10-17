@@ -16,15 +16,56 @@ export async function onRequestGet({params,env}){
     versions.flatMap(v=>v.images)
   )].slice(0,48);
 
-  const totalImages = sourceImages.length;
+  let totalImages = sourceImages.length;
+  let imageSource = "modelVersions";
 
-  return json({totalImages,
+  if (!previewImages.length) {
+    try {
+      const imageParams = new URLSearchParams({
+        modelId: String(id),
+        limit: "20"
+      });
+
+      const imageResponse = await fetch(
+        "https://civitai.red/api/v1/images?" + imageParams,
+        {
+          headers,
+          signal: AbortSignal.timeout(8000)
+        }
+      );
+
+      if (imageResponse.ok) {
+        const imageData = await imageResponse.json();
+
+        const fallbackImages = (imageData.items || [])
+          .filter(i =>
+            typeof i.url === "string" &&
+            i.url.startsWith("https://")
+          );
+
+        for (const item of fallbackImages) {
+          if (!previewImages.includes(item.url)) {
+            previewImages.push(item.url);
+          }
+        }
+
+        if (fallbackImages.length) {
+          totalImages = fallbackImages.length;
+          imageSource = "imagesAPI";
+        }
+      }
+    } catch {
+      // Giữ nguyên dữ liệu model nếu API ảnh lỗi.
+    }
+  }
+
+  return json({imageSource,totalImages,
     image:previewImages[0]||null,
     previewImages,
     id:m.id,name:m.name,type:m.type,creator:m.creator?.username||"",description:m.description||"",tags:m.tags||[],versions,
-    previewStatus: versions.some(v=>v.images.length)
+    previewStatus: previewImages.length
       ? "available"
-      : (m.modelVersions||[]).some(v=>(v.images||[]).length)
+      : sourceImages.length
         ? "unavailable" : "missing",
     url:`https://civitai.com/models/${id}`});
  }catch{return json({error:"Không kết nối được Civitai"},502)}
