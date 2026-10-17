@@ -8,7 +8,17 @@ export async function onRequestGet({params,env}){
   const res=await fetch(`https://civitai.com/api/v1/models/${id}`,{headers,signal:AbortSignal.timeout(12000)});
   if(!res.ok)return json({error:"Không tải được model",upstreamStatus:res.status},res.status===404?404:502);
   const m=await res.json();
-  const versions=(m.modelVersions||[]).map(v=>({id:v.id,name:v.name,baseModel:v.baseModel,images:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https://")).slice(0,24).map(i=>i.url),media:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https://")).slice(0,24).map(i=>({id:i.id||null,url:i.url,type:i.type||null,mimeType:i.mimeType||null,nsfwLevel:i.nsfwLevel??null,meta:i.meta||null}))}));
+  const versions=(m.modelVersions||[]).map(v=>({id:v.id,name:v.name,baseModel:v.baseModel,
+files:(v.files||[]).map(f=>({
+  name:f.name||"",
+  sizeKB:f.sizeKB??null,
+  type:f.type||"",
+  format:f.metadata?.format||"",
+  downloadUrl:typeof f.downloadUrl==="string"
+    && f.downloadUrl.startsWith("https://")
+    ? f.downloadUrl:null
+})),
+images:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https://")).slice(0,24).map(i=>i.url),media:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https://")).slice(0,24).map(i=>({id:i.id||null,url:i.url,type:i.type||null,mimeType:i.mimeType||null,nsfwLevel:i.nsfwLevel??null,meta:i.meta||null}))}));
   const sourceImages = (m.modelVersions||[])
     .flatMap(v=>v.images||[]);
 

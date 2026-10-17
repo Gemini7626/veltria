@@ -46,7 +46,41 @@ button,a.btn{cursor:pointer;border-radius:13px}
 #v6-prev{left:8px;bottom:12px}
 #v6-next{right:8px;bottom:12px}
 #v6-count{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-size:13px;color:#e7d7f5}
-</style><header><a href="/">✦ VELTRIA</a><span class="sub">MODEL DETAILS</span></header><main><p><a style="color:#c99aff" href="/models/">Models</a> / Chi tiết</p><p id="status" class="sub">Đang tải model...</p><div id="detail" hidden><img id="hero" alt="Ảnh model" loading="lazy" decoding="async"><h1 id="name"></h1><p id="meta" class="sub"></p><div class="v21-actions"><button id="fav">♡ Yêu thích</button><a id="civitai" class="btn" target="_blank" rel="noopener noreferrer">↗ Civitai</a></div><section class="panel"><h2>Phiên bản</h2><select id="versions"></select><p id="base" class="sub"></p><div id="gallery" class="gallery"></div></section><section class="panel"><h2>Mô tả</h2><div id="description" class="desc"></div><div id="tags" class="tags"></div></section><section class="panel"><h2>Sử dụng model</h2><button id="use">✧ Chọn cho Image Studio</button><p class="sub">Lưu lựa chọn cho Image Studio. Chưa thể tạo ảnh nếu chưa kết nối backend chạy AI.</p></section></div></main><div id="v21-lightbox" class="v21-lightbox" hidden role="dialog" aria-label="Xem ảnh lớn"><button id="v21-close" type="button" aria-label="Đóng ảnh">✕</button><img id="v21-large" alt="Ảnh model phóng lớn" loading="lazy" decoding="async"></div><div id="v6-viewer" class="v6-viewer" hidden role="dialog" aria-modal="true" aria-label="Xem ảnh và video mẫu"><button id="v6-close" type="button" aria-label="Đóng">✕</button><button id="v6-prev" type="button" aria-label="Trước">❮</button><span id="v6-count"></span><button id="v6-next" type="button" aria-label="Sau">❯</button><div id="v6-stage"></div></div><script>
+
+#download-files{display:grid;gap:12px}
+.vel-file{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:12px;
+ padding:15px;
+ background:#291d3c;
+ border:1px solid #57416c;
+ border-radius:14px;
+}
+.vel-file-info{min-width:0;flex:1}
+.vel-file-info strong{
+ display:block;
+ overflow-wrap:anywhere;
+ margin-bottom:6px;
+}
+.vel-file-info small{color:#bcaece}
+.vel-file a{
+ padding:12px 16px;
+ border-radius:11px;
+ color:white;
+ text-decoration:none;
+ font-weight:700;
+ background:linear-gradient(120deg,#7438ea,#bd44e9);
+}
+</style><header><a href="/">✦ VELTRIA</a><span class="sub">MODEL DETAILS</span></header><main><p><a style="color:#c99aff" href="/models/">Models</a> / Chi tiết</p><p id="status" class="sub">Đang tải model...</p><div id="detail" hidden><img id="hero" alt="Ảnh model" loading="lazy" decoding="async"><h1 id="name"></h1><p id="meta" class="sub"></p><div class="v21-actions"><button id="fav">♡ Yêu thích</button><a id="civitai" class="btn" target="_blank" rel="noopener noreferrer">↗ Civitai</a></div><section class="panel"><h2>Phiên bản</h2><select id="versions"></select><p id="base" class="sub"></p><h3>Gallery · Ảnh và video mẫu</h3>
+<div id="gallery" class="gallery"></div></section><section class="panel" id="download-panel">
+<h2>⬇ Download Model</h2>
+<p class="sub">Chọn phiên bản để xem các tệp tải xuống.</p>
+<div id="download-files"></div>
+</section>
+<section class="panel"><h2>Mô tả</h2><div id="description" class="desc"></div><div id="tags" class="tags"></div></section><section class="panel"><h2>Sử dụng model</h2><button id="use">✧ Chọn cho Image Studio</button><p class="sub">Lưu lựa chọn cho Image Studio. Chưa thể tạo ảnh nếu chưa kết nối backend chạy AI.</p></section></div></main><div id="v21-lightbox" class="v21-lightbox" hidden role="dialog" aria-label="Xem ảnh lớn"><button id="v21-close" type="button" aria-label="Đóng ảnh">✕</button><img id="v21-large" alt="Ảnh model phóng lớn" loading="lazy" decoding="async"></div><div id="v6-viewer" class="v6-viewer" hidden role="dialog" aria-modal="true" aria-label="Xem ảnh và video mẫu"><button id="v6-close" type="button" aria-label="Đóng">✕</button><button id="v6-prev" type="button" aria-label="Trước">❮</button><span id="v6-count"></span><button id="v6-next" type="button" aria-label="Sau">❯</button><div id="v6-stage"></div></div><script>
 const $=id=>document.getElementById(id),id=Number(new URLSearchParams(location.search).get('id'));let model;const fallback='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450"><rect width="100%" height="100%" fill="#29203e"/><circle cx="430" cy="120" r="180" fill="#643583" opacity=".48"/><path d="M-40 380 Q190 70 640 370" stroke="#ad73da" stroke-width="90" fill="none" opacity=".26"/></svg>');const fkey='veltria:model-favorites:v3';
 const cacheKey='veltria:fav-cache';
 function favs(){try{const x=JSON.parse(localStorage.getItem(fkey)||'[]');return Array.isArray(x)?x.map(String):[]}catch{return []}}
@@ -108,10 +142,64 @@ document.addEventListener("keydown",e=>{
  if(e.key==="ArrowLeft")v6Show(v6Index-1);
  if(e.key==="ArrowRight")v6Show(v6Index+1);
 });
+
+function showDownloads(version){
+ const box=document.getElementById("download-files");
+ box.replaceChildren();
+
+ const files=version?.files||[];
+
+ if(!files.length){
+  box.textContent="Chưa có thông tin tệp tải từ API.";
+  return;
+ }
+
+ for(const file of files){
+  const row=document.createElement("div");
+  row.className="vel-file";
+
+  const info=document.createElement("div");
+  info.className="vel-file-info";
+
+  const name=document.createElement("strong");
+  name.textContent=file.name||"Model file";
+
+  const meta=document.createElement("small");
+  const size=Number(file.sizeKB);
+
+  const sizeText=Number.isFinite(size)&&size>0
+   ?(size/1024).toFixed(2)+" MB"
+   :"Chưa rõ dung lượng";
+
+  meta.textContent=[
+   file.format||file.type||"File",
+   sizeText
+  ].join(" · ");
+
+  info.append(name,meta);
+  row.append(info);
+
+  if(file.downloadUrl){
+   const link=document.createElement("a");
+   link.href=file.downloadUrl;
+   link.target="_blank";
+   link.rel="noopener noreferrer";
+   link.textContent="⬇ Download";
+   row.append(link);
+  }else{
+   const note=document.createElement("small");
+   note.textContent="Không có URL tải";
+   row.append(note);
+  }
+
+  box.append(row);
+ }
+}
 function showVersion(){
  v6Close();
  const v=(model.versions||[]).find(x=>String(x.id)===$("versions").value);
  const gallery=$("gallery");gallery.replaceChildren();v6Items=[];
+ showDownloads(v);
  if(!v){$("base").textContent="Model chưa có phiên bản công khai.";$("hero").src=fallback;return;}
  $("base").textContent="Base model: "+(v.baseModel||"Không rõ");
  v6Items=v6Media(v);
