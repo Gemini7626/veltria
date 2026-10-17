@@ -67,13 +67,18 @@ async function loadModels() {
       type.textContent = model.type || "Model";
 
       const link = document.createElement("a");
-      link.href = `https://civitai.${isRed ? "red" : "com"}/models/${model.id}`;
+      link.href = `/models/${source}/detail/?id=${model.id}`;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      link.textContent = "Xem model ↗";
+      link.textContent = "Xem chi tiết trong VELTRIA →";
 
       info.append(name, type, link);
       card.appendChild(info);
+      card.style.cursor = "pointer";
+      card.addEventListener("click", event => {
+        if (event.target.closest("a,button")) return;
+        location.href = link.href;
+      });
       grid.appendChild(card);
     }
   } catch (error) {
