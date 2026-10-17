@@ -65,6 +65,18 @@ h1{letter-spacing:-.045em;line-height:1.08}
 .v2-placeholder{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 70% 18%,#8140a3 0%,transparent 50%),linear-gradient(145deg,#302043,#131022);font-size:12px;line-height:1.5}
 .v2-placeholder:before{content:'✦';position:absolute;font-size:92px;opacity:.11;transform:rotate(-15deg);z-index:-1}
 @media(max-width:430px){header{padding:13px 16px}.brand{font-size:23px}main{padding:22px 14px 76px}.card .info{padding:12px}.grid{gap:11px}}
+
+/* VELTRIA MODEL HUB V3 */
+.v3-tools{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:0 0 15px}
+.v3-tools button{background:#251a37;border:1px solid #5b4174;border-radius:12px;padding:10px 14px}
+.v3-tools button.active{background:#7839dd;border-color:#c48aff}
+.v3-count{color:#b9a9d0;font-size:12px}
+.card{position:relative}
+.v3-fav{position:absolute;top:9px;right:9px;z-index:2;width:36px;height:36px;padding:0;border-radius:12px;background:#160d25dd;border:1px solid #bda3da77;display:grid;place-items:center;font-size:21px;line-height:1;backdrop-filter:blur(8px)}
+.v3-fav.saved{background:#7839dd;color:white}
+.v3-creator{margin-top:6px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#9e8cb9!important}
+.card:focus-within{border-color:#b46aff}
+@media(max-width:430px){.v3-fav{width:33px;height:33px;top:7px;right:7px}.v3-tools button{padding:9px 11px}}
 </style>
 </head>
 <body>
@@ -93,6 +105,7 @@ h1{letter-spacing:-.045em;line-height:1.08}
 </select>
 </div>
 
+<div class="v3-tools"><button id="v3FavOnly" type="button" aria-pressed="false">♡ Đã lưu</button><span id="v3FavCount" class="v3-count"></span></div>
 <p class="status" id="status">Đang tải danh sách model...</p>
 <div class="grid" id="results"></div>
 <div style="text-align:center;margin-top:24px">
@@ -109,6 +122,26 @@ const sort=document.getElementById("sort");
 let type="",next=null,requestId=0,loading=false;
 const seenIds=new Set();
 let nextCursor=null;
+const V3_KEY="veltria:model-favorites:v3";
+let v3Favorites=new Set();
+try{const data=JSON.parse(localStorage.getItem(V3_KEY)||"[]");if(Array.isArray(data))v3Favorites=new Set(data.map(String));}catch{}
+let v3Only=false;
+const v3Cards=new Map();
+function v3Save(){try{localStorage.setItem(V3_KEY,JSON.stringify([...v3Favorites]));}catch{}}
+function v3Update(){
+  const count=document.getElementById("v3FavCount");
+  count.textContent=v3Favorites.size+" model đã lưu trên thiết bị";
+  const btn=document.getElementById("v3FavOnly");
+  btn.classList.toggle("active",v3Only);
+  btn.setAttribute("aria-pressed",String(v3Only));
+  for(const [id,card] of v3Cards){
+    const saved=v3Favorites.has(id);
+    card.hidden=v3Only&&!saved;
+    const fav=card.querySelector(".v3-fav");
+    if(fav){fav.textContent=saved?"♥":"♡";fav.classList.toggle("saved",saved);fav.setAttribute("aria-label",saved?"Bỏ lưu model":"Lưu model yêu thích");fav.setAttribute("aria-pressed",String(saved));}
+  }
+}
+document.getElementById("v3FavOnly").addEventListener("click",()=>{v3Only=!v3Only;v3Update();});
 
 function el(tag,cls,text){
   const node=document.createElement(tag);
@@ -155,18 +188,31 @@ function render(model){
     card.append(placeholder);
   }
 
+  const modelId=String(model.id);
+  const fav=el("button","v3-fav");
+  fav.type="button";
+  fav.addEventListener("click",event=>{
+    event.preventDefault();event.stopPropagation();
+    if(v3Favorites.has(modelId))v3Favorites.delete(modelId);
+    else v3Favorites.add(modelId);
+    v3Save();v3Update();
+  });
+  card.append(fav);
   const info=el("div","info");
   info.append(el("h3","",model.name||"Chưa có tên"));
   info.append(el("p","",model.type||"Model"));
+  if(model.creator)info.append(el("p","v3-creator","@"+model.creator));
   card.append(info);
   results.append(card);
+  v3Cards.set(modelId,card);
+  v3Update();
 }
 
 async function load(append=false){
   if(append && loading)return;
   const id=++requestId;
   loading=true;
-  if(!append){ results.replaceChildren(); next=null; nextCursor=null; seenIds.clear(); }
+  if(!append){ results.replaceChildren(); v3Cards.clear(); next=null; nextCursor=null; seenIds.clear(); }
   more.hidden=true;
   status.textContent="Đang tải model...";
   const params=new URLSearchParams({
@@ -193,13 +239,15 @@ async function load(append=false){
       seenIds.add(String(model.id));
       render(model);
     }
+    v3Update();
     nextCursor=data.nextCursor||null;
     next=data.hasMore ? (data.nextPage || (nextCursor ? null : Number(data.page)+1)) : null;
     if(!data.hasMore || (!nextCursor && !next)) next=null;
     more.hidden=!(nextCursor || next);
     loading=false;
+    const visible=[...v3Cards.values()].filter(card=>!card.hidden).length;
     status.textContent=results.children.length
-      ? "Đã hiển thị "+results.children.length+" model công khai."
+      ? "Đã tải "+results.children.length+" model công khai. "+(v3Only?"Đang hiển thị "+visible+" model đã lưu trong kết quả.":"")
       : "Chưa tìm thấy model phù hợp.";
   }catch(err){
     if(id!==requestId)return;
