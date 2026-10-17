@@ -167,51 +167,78 @@ function render(model){
   card.removeAttribute("target");
   card.rel="noopener noreferrer";
 
+
   const image=model.image;
-  // VELTRIA image repair: resolve missing list previews from the detail API.
-  // Never use unfiltered upstream image URLs.
-  if(!image && model.id != null){
-    v4ResolvePreview(model,card);
+  const candidates=[
+    ...new Set(
+      [image,...(Array.isArray(model.previewImages)
+        ? model.previewImages:[])]
+      .filter(u=>typeof u==="string" && /^https:\/\//i.test(u))
+    )
+  ];
+
+  const img=el("img");
+  img.alt=model.name||"Model";
+  img.loading="lazy";
+  img.decoding="async";
+  img.referrerPolicy="no-referrer";
+
+  let index=0;
+  let recovered=false;
+
+  function unavailable(){
+    img.onerror=null;
+    img.replaceWith(
+      el("div","v2-placeholder",
+        model.previewStatus==="restricted"
+          ?"🔒 Ảnh giới hạn"
+          :"✦ Ảnh không tải được")
+    );
   }
 
+  async function tryNext(){
+    index++;
+    if(index<candidates.length){
+      img.src=candidates[index];
+      return;
+    }
 
-  if(image){
-    const img=el("img");
-    img.src=image;
-    img.alt=model.name || "Model";
-    img.loading="lazy";
-    img.referrerPolicy="no-referrer";
+    if(!recovered && model.id!=null){
+      recovered=true;
+      const result=await v4PreviewLookup(model.id);
+      if(!img.isConnected)return;
 
-      const candidates = Array.isArray(model.previewImages)
-        && model.previewImages.length
-        ? model.previewImages : [model.image];
-      let fallbackIndex = 0;
-      let retried = false;
-      img.onerror = () => {
-        if (!retried) {
-          retried = true;
-          const current = img.src;
-          img.src = "";
-          img.src = current;
-          return;
+      if(result){
+        model.previewStatus=result.previewStatus;
+        for(const url of result.previewImages||[]){
+          if(typeof url==="string"
+             && /^https:\/\//i.test(url)
+             && !candidates.includes(url)){
+            candidates.push(url);
+          }
         }
-        retried = false;
-        fallbackIndex++;
-        if (fallbackIndex < candidates.length) {
-          img.src = candidates[fallbackIndex];
-          return;
-        }
-        img.onerror = null;
-        img.src = "data:image/svg+xml," +
-          encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="100%" height="100%" fill="#29203e"/><text x="50%" y="50%" fill="#c5b1e8" text-anchor="middle" font-size="25">VELTRIA</text></svg>');
-      };
+      }
+
+      if(index<candidates.length){
+        img.src=candidates[index];
+        return;
+      }
+    }
+    unavailable();
+  }
+
+  img.onerror=()=>{void tryNext();};
+
+  if(candidates.length){
+    img.src=candidates[0];
     card.append(img);
   }else{
-    const placeholder=el("div");
-    placeholder.className="v2-placeholder";
-    placeholder.textContent=model.previewStatus==="restricted"
-      ? "🔒 Ảnh giới hạn" : "✦ Chưa có ảnh công khai";
+    const placeholder=el("div","v2-placeholder",
+      model.previewStatus==="restricted"
+        ?"🔒 Ảnh giới hạn"
+        :"✦ Đang tìm ảnh mẫu");
     card.append(placeholder);
+    if(model.id!=null)v4ResolvePreview(model,card);
   }
 
   const modelId=String(model.id);
