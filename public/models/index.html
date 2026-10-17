@@ -126,6 +126,30 @@ h1{letter-spacing:-.045em;line-height:1.08}
 <div style="text-align:center;margin-top:24px">
 <button id="more" type="button" hidden>Tải thêm</button>
 </div>
+
+<!-- VELTRIA EXTENDED MODEL TYPES -->
+<div id="vel-model-types" style="margin:14px 0 22px">
+  <label for="vel-type-select"
+    style="display:block;margin-bottom:8px;color:#c9a7ff">
+    Model Type
+  </label>
+  <select id="vel-type-select"
+    style="width:100%;max-width:380px">
+    <option value="">Tất cả Model Type</option>
+    <option value="Checkpoint">Checkpoint</option>
+    <option value="LORA">LoRA</option>
+    <option value="VAE">VAE</option>
+    <option value="Controlnet">ControlNet</option>
+    <option value="Upscaler">Upscaler</option>
+    <option value="TextualInversion">Textual Inversion</option>
+    <option value="MotionModule">Motion Module</option>
+    <option value="Hypernetwork">Hypernetwork</option>
+    <option value="Workflows">Workflows</option>
+    <option value="Poses">Poses</option>
+    <option value="Wildcards">Wildcards</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
 </main>
 <script>
 const API="/api/models";
@@ -478,7 +502,10 @@ async function load(append=false){
       ?"Most Downloaded"
       :sort.value
   });
-  if(type)params.set("type",type);
+  const extendedType =
+    document.getElementById("vel-type-select")?.value || "";
+  if(extendedType)params.set("type",extendedType);
+  else if(type)params.set("type",type);
   if(query.value.trim())params.set("query",query.value.trim());
 
   try{
@@ -607,6 +634,9 @@ more.addEventListener("click",()=>{
 });
 v471RestoreState();
 load();
+document.getElementById("vel-type-select")?.addEventListener(
+  "change", () => load(false)
+);
 </script>
 </body>
 </html>

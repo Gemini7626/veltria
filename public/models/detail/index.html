@@ -97,8 +97,8 @@ button,a.btn{cursor:pointer;border-radius:13px}
 </style><header><a href="/">✦ VELTRIA</a><span class="sub">MODEL DETAILS</span></header><main><p><a style="color:#c99aff" href="/models/">Models</a> / Chi tiết</p><p id="status" class="sub">Đang tải model...</p><div id="detail" hidden><img id="hero" alt="Ảnh model" loading="lazy" decoding="async"><h1 id="name"></h1><p id="meta" class="sub"></p><div class="v21-actions"><button id="fav">♡ Yêu thích</button><a id="civitai" class="btn" target="_blank" rel="noopener noreferrer">↗ Civitai</a></div><section class="panel"><h2>Phiên bản</h2><select id="versions"></select><p id="base" class="sub"></p><h3>Gallery · Ảnh và video mẫu</h3>
 <div class="vel-gallery-filters">
 <button type="button" data-gallery-source="all" class="active">Tất cả</button>
-<button type="button" data-gallery-source="red">Civitai Red</button>
-<button type="button" data-gallery-source="com">Civitai</button>
+
+
 </div>
 <p id="vel-gallery-status" class="sub"></p>
 <div id="gallery" class="gallery"></div></section><section class="panel" id="download-panel">
@@ -310,7 +310,7 @@ function velRenderGallery(){
 async function velLoadGallery(){
  const requestId=++velGalleryRequest;
  velGalleryItems=[];
- $("vel-gallery-status").textContent="Đang tải Gallery hai nguồn...";
+ $("vel-gallery-status").textContent="Đang tải Gallery...";
  velRenderGallery();
 
  try{
@@ -329,7 +329,7 @@ async function velLoadGallery(){
 
   velRenderGallery();
 
-  if(!red?.ok || !com?.ok){
+  if(false){
    $("vel-gallery-status").textContent+=
     " · Một nguồn API hiện không phản hồi.";
   }
