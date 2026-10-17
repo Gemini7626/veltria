@@ -141,7 +141,11 @@ function v3Update(){
     if(fav){fav.textContent=saved?"♥":"♡";fav.classList.toggle("saved",saved);fav.setAttribute("aria-label",saved?"Bỏ lưu model":"Lưu model yêu thích");fav.setAttribute("aria-pressed",String(saved));}
   }
 }
-document.getElementById("v3FavOnly").addEventListener("click",()=>{v3Only=!v3Only;v3Update();});
+document.getElementById("v3FavOnly").addEventListener("click",()=>{
+ v3Only=!v3Only;
+ v3Update();
+ if(v3Only)showSavedModels();else load();
+});
 
 function el(tag,cls,text){
   const node=document.createElement(tag);
@@ -151,6 +155,13 @@ function el(tag,cls,text){
 }
 
 function render(model){
+ if(v3Favorites.has(String(model.id))){
+  try{
+   const cache=JSON.parse(localStorage.getItem("veltria:fav-cache")||"{}");
+   cache[String(model.id)]=model;
+   localStorage.setItem("veltria:fav-cache",JSON.stringify(cache));
+  }catch{}
+ }
   const card=el("a","card");
   card.href="/models/detail/?id="+encodeURIComponent(model.id);
   card.removeAttribute("target");
@@ -196,6 +207,7 @@ function render(model){
     if(v3Favorites.has(modelId))v3Favorites.delete(modelId);
     else v3Favorites.add(modelId);
     v3Save();v3Update();
+    if(v3Only)showSavedModels();
   });
   card.append(fav);
   const info=el("div","info");
@@ -208,7 +220,56 @@ function render(model){
   v3Update();
 }
 
+async function showSavedModels(){
+ const token=++requestId;
+ loading=false;
+ results.replaceChildren();
+ v3Cards.clear();
+ more.hidden=true;
+ next=null;
+ nextCursor=null;
+ status.textContent="Đang tải model yêu thích...";
+
+ let cache={};
+ try{cache=JSON.parse(localStorage.getItem("veltria:fav-cache")||"{}")}catch{}
+
+ const ids=[...v3Favorites];
+ for(const modelId of ids){
+  if(token!==requestId||!v3Only)return;
+  let model=cache[modelId];
+
+  if(!model){
+   try{
+    const response=await fetch("/api/model/"+encodeURIComponent(modelId));
+    if(response.ok){
+     const detail=await response.json();
+     const images=(detail.versions||[]).flatMap(v=>v.images||[]);
+     model={
+      id:detail.id,name:detail.name,type:detail.type,
+      creator:detail.creator,image:images[0]||null,
+      previewImages:images,previewStatus:detail.previewStatus
+     };
+     cache[modelId]=model;
+    }
+   }catch{}
+  }
+
+  if(!model)model={id:modelId,name:"Model #"+modelId,type:"Model"};
+
+  const q=query.value.trim().toLowerCase();
+  if(type&&model.type!==type)continue;
+  if(q&&!String(model.name||"").toLowerCase().includes(q))continue;
+  render(model);
+ }
+
+ if(token!==requestId)return;
+ try{localStorage.setItem("veltria:fav-cache",JSON.stringify(cache))}catch{}
+ status.textContent="Đang hiển thị "+results.children.length+
+  " / "+v3Favorites.size+" model yêu thích.";
+}
+
 async function load(append=false){
+ if(v3Only){await showSavedModels();return;}
   if(append && loading)return;
   const id=++requestId;
   loading=true;
