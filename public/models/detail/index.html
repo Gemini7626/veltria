@@ -265,7 +265,9 @@ function velRenderGallery(){
   $("hero").onerror=null;
   $("hero").src=fallback;
  };
- $("hero").src=first?first.url:fallback;
+ if(velGallerySource==="all"){
+  $("hero").src=first?first.url:fallback;
+ }
 
  v6Items.forEach((item,i)=>{
   const btn=document.createElement("button");
