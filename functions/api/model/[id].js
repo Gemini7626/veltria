@@ -8,7 +8,7 @@ export async function onRequestGet({params,env}){
   const res=await fetch(`https://civitai.com/api/v1/models/${id}`,{headers,signal:AbortSignal.timeout(12000)});
   if(!res.ok)return json({error:"Không tải được model",upstreamStatus:res.status},res.status===404?404:502);
   const m=await res.json();
-  const versions=(m.modelVersions||[]).map(v=>({id:v.id,name:v.name,baseModel:v.baseModel,images:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https://")).slice(0,8).map(i=>i.url)}));
+  const versions=(m.modelVersions||[]).map(v=>({id:v.id,name:v.name,baseModel:v.baseModel,images:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https://")).slice(0,8).map(i=>i.url),media:(v.images||[]).filter(i=>typeof i.url==="string"&&i.url.startsWith("https://")).slice(0,24).map(i=>({id:i.id||null,url:i.url,type:i.type||null,mimeType:i.mimeType||null,nsfwLevel:i.nsfwLevel??null,meta:i.meta||null}))}));
   return json({id:m.id,name:m.name,type:m.type,creator:m.creator?.username||"",description:m.description||"",tags:m.tags||[],versions,
     previewStatus: versions.some(v=>v.images.length)
       ? "available"
