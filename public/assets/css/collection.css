@@ -7,3 +7,38 @@
 .menu-body button{display:block;width:100%;text-align:left;white-space:nowrap;background:transparent;border:0;padding:10px;font-size:13px}
 .menu-body button:hover{background:#44305e}.thumb{background:#241b32}.page-head .upload{padding:10px 13px}
 @media(max-width:370px){.gallery{gap:9px}.item-info{padding:9px}.item-title{font-size:13px}.menu-body{min-width:128px}}
+
+
+/* VELTRIA Library: floating menu */
+.item {
+  position: relative;
+  overflow: visible;
+}
+
+.item .actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+}
+
+.item-menu {
+  position: relative;
+}
+
+.menu-toggle {
+  background: rgba(24, 17, 33, .85);
+  backdrop-filter: blur(8px);
+  border: 1px solid #80649d;
+}
+
+.menu-body {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  z-index: 20;
+}
+
+.item:has(.item-menu[open]) {
+  z-index: 30;
+}
