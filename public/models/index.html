@@ -290,7 +290,7 @@ async function v4PreviewLookup(id){
    const d=await response.json();
    const urls=(d.versions||[]).flatMap(v=>v.images||[])
     .filter(u=>typeof u==='string' && u.startsWith('https://'));
-   const result={image:urls[0]||null,previewImages:[...new Set(urls)].slice(0,8),previewStatus:d.previewStatus||'unknown'};
+   const result={image:urls[0]||null,previewImages:[...new Set(urls)].slice(0,48),previewStatus:d.previewStatus||'unknown'};
    v4PreviewCache.set(key,result);
    return result;
   }catch{return null}
