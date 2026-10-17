@@ -1,4 +1,26 @@
-<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Model Details | VELTRIA</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0915;color:white;font:16px system-ui}header{padding:20px;border-bottom:1px solid #352845;display:flex;justify-content:space-between}header a{font-size:24px;font-weight:900;color:white;text-decoration:none}main{max-width:850px;margin:auto;padding:24px 16px}h1{overflow-wrap:anywhere;font-size:clamp(28px,7vw,44px)}.sub{color:#b9aec9}.panel{background:#1b152b;border:1px solid #382c4d;border-radius:18px;padding:18px;margin:20px 0}img{width:100%;max-height:470px;object-fit:contain;background:#29203e;border-radius:12px}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:13px 16px;background:linear-gradient(120deg,#7938ef,#bd44e9);color:white;font-weight:700;text-decoration:none;margin:6px 6px 6px 0}select{width:100%;padding:12px;border:1px solid #514064;border-radius:10px;background:#241a37;color:white}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gallery img{aspect-ratio:1;object-fit:cover}.desc{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}.tags span{display:inline-block;background:#322443;border-radius:30px;padding:6px 10px;margin:4px;font-size:12px}</style><header><a href="/">✦ VELTRIA</a><span class="sub">MODEL DETAILS</span></header><main><p><a style="color:#c99aff" href="/models/">Models</a> / Chi tiết</p><p id="status" class="sub">Đang tải model...</p><div id="detail" hidden><img id="hero" alt="Ảnh model"><h1 id="name"></h1><p id="meta" class="sub"></p><button id="fav">♡ Yêu thích</button><a id="civitai" class="btn" target="_blank" rel="noopener noreferrer">↗ Civitai</a><section class="panel"><h2>Phiên bản</h2><select id="versions"></select><p id="base" class="sub"></p><div id="gallery" class="gallery"></div></section><section class="panel"><h2>Mô tả</h2><div id="description" class="desc"></div><div id="tags" class="tags"></div></section><section class="panel"><h2>Sử dụng model</h2><button id="use">✧ Chọn cho Image Studio</button><p class="sub">Lưu lựa chọn cho Image Studio. Chưa thể tạo ảnh nếu chưa kết nối backend chạy AI.</p></section></div></main><script>
+<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Model Details | VELTRIA</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0915;color:white;font:16px system-ui}header{padding:20px;border-bottom:1px solid #352845;display:flex;justify-content:space-between}header a{font-size:24px;font-weight:900;color:white;text-decoration:none}main{max-width:850px;margin:auto;padding:24px 16px}h1{overflow-wrap:anywhere;font-size:clamp(28px,7vw,44px)}.sub{color:#b9aec9}.panel{background:#1b152b;border:1px solid #382c4d;border-radius:18px;padding:18px;margin:20px 0}img{width:100%;max-height:470px;object-fit:contain;background:#29203e;border-radius:12px}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:13px 16px;background:linear-gradient(120deg,#7938ef,#bd44e9);color:white;font-weight:700;text-decoration:none;margin:6px 6px 6px 0}select{width:100%;padding:12px;border:1px solid #514064;border-radius:10px;background:#241a37;color:white}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gallery img{aspect-ratio:1;object-fit:cover}.desc{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}.tags span{display:inline-block;background:#322443;border-radius:30px;padding:6px 10px;margin:4px;font-size:12px}
+/* VELTRIA MODEL DETAILS V2 - responsive presentation */
+:root{--v2-line:#49355c}
+body{background:radial-gradient(ellipse at 0 0,#231433 0,transparent 45%),#0e0a18}
+header{position:sticky;top:0;z-index:30;align-items:center;gap:10px;background:#100b1bf2;backdrop-filter:blur(14px);border-bottom-color:var(--v2-line)}
+header a{font-size:clamp(21px,4vw,28px);color:#d8a5ff}
+header .sub{font-size:12px;white-space:nowrap}
+main{max-width:1150px;padding:24px 16px 70px}
+#detail{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+#detail[hidden]{display:none}
+#hero{display:block;width:100%;aspect-ratio:4/3;max-height:620px;object-fit:cover;background:radial-gradient(circle at 60% 30%,#4d2a67,#21182f);border:1px solid var(--v2-line);border-radius:20px}
+h1{margin:18px 0 5px;line-height:1.15;letter-spacing:-.035em}
+.panel{background:#1c142b;border:1px solid var(--v2-line);border-radius:20px;padding:20px;margin:17px 0}
+.panel h2{font-size:clamp(20px,4vw,27px);margin:0 0 18px}
+.gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gallery .sub{grid-column:1/-1;display:block;width:100%;margin:12px 0;line-height:1.55;overflow-wrap:anywhere}
+.gallery img{width:100%;aspect-ratio:1;cursor:pointer;border:1px solid #5b4070;border-radius:11px;object-fit:cover}
+.gallery img:hover{border-color:#ba80ff}
+select{min-height:50px;border-radius:12px}
+button,a.btn{cursor:pointer;border-radius:13px}
+.desc{color:#ddd5e8;font-size:14px}
+@media(min-width:800px){#hero{aspect-ratio:16/9}.gallery{grid-template-columns:repeat(5,minmax(0,1fr))}}
+</style><header><a href="/">✦ VELTRIA</a><span class="sub">MODEL DETAILS</span></header><main><p><a style="color:#c99aff" href="/models/">Models</a> / Chi tiết</p><p id="status" class="sub">Đang tải model...</p><div id="detail" hidden><img id="hero" alt="Ảnh model"><h1 id="name"></h1><p id="meta" class="sub"></p><button id="fav">♡ Yêu thích</button><a id="civitai" class="btn" target="_blank" rel="noopener noreferrer">↗ Civitai</a><section class="panel"><h2>Phiên bản</h2><select id="versions"></select><p id="base" class="sub"></p><div id="gallery" class="gallery"></div></section><section class="panel"><h2>Mô tả</h2><div id="description" class="desc"></div><div id="tags" class="tags"></div></section><section class="panel"><h2>Sử dụng model</h2><button id="use">✧ Chọn cho Image Studio</button><p class="sub">Lưu lựa chọn cho Image Studio. Chưa thể tạo ảnh nếu chưa kết nối backend chạy AI.</p></section></div></main><script>
 const $=id=>document.getElementById(id),id=Number(new URLSearchParams(location.search).get('id'));let model;const fallback='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450"><rect width="100%" height="100%" fill="#29203e"/><text x="50%" y="50%" text-anchor="middle" fill="#c5b1e8" font-size="32">VELTRIA</text></svg>');const fkey='veltria:favorites:v1';const favs=()=>{try{return JSON.parse(localStorage.getItem(fkey)||'[]')}catch{return []}};
 $('hero').onerror=()=>{$('hero').onerror=null;$('hero').src=fallback};function favLabel(){$('fav').textContent=favs().some(x=>x.id===id)?'♥ Đã yêu thích':'♡ Yêu thích'}$('fav').onclick=()=>{const old=favs(),found=old.some(x=>x.id===id);const newer=old.filter(x=>x.id!==id);if(!found)newer.unshift({id,name:model.name,type:model.type,image:model.versions[0]?.images[0]||null});localStorage.setItem(fkey,JSON.stringify(newer.slice(0,200)));favLabel()};$('use').onclick=()=>{localStorage.setItem('veltria:selected-model',JSON.stringify({id,name:model.name,type:model.type,versionId:Number($('versions').value)}));$('use').textContent='✓ Đã lưu lựa chọn'};
 function showVersion(){const v=model.versions.find(x=>String(x.id)===$('versions').value);if(!v)return;$('base').textContent='Base model: '+(v.baseModel||'Không rõ');$('gallery').replaceChildren();
@@ -10,9 +32,9 @@ if(!imgs.length){
     :"Chưa có ảnh xem trước";
   const note=document.createElement('p');
   note.className='sub';
-  note.textContent=model.previewStatus==="restricted"
-    ?"🔒 Ảnh xem trước bị giới hạn ở khu vực công khai."
-    :"Phiên bản này chưa có ảnh xem trước.";
+  note.textContent=(model.previewStatus==="restricted" && !/inpaint/i.test(v.name||""))
+    ?"🔒 Không có ảnh xem trước được phép hiển thị công khai."
+    :"Phiên bản này chưa có ảnh xem trước công khai.";
   $('gallery').append(note);
   return;
 }
