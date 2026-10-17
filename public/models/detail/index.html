@@ -38,7 +38,15 @@ const cacheKey='veltria:fav-cache';
 function favs(){try{const x=JSON.parse(localStorage.getItem(fkey)||'[]');return Array.isArray(x)?x.map(String):[]}catch{return []}}
 function saveFavs(x){try{localStorage.setItem(fkey,JSON.stringify(x))}catch{}}
 function rememberModel(){try{const cache=JSON.parse(localStorage.getItem(cacheKey)||'{}');const images=(model.versions||[]).flatMap(v=>v.images||[]);cache[String(id)]={id,name:model.name,type:model.type,creator:model.creator,image:images[0]||null,previewImages:images,previewStatus:model.previewStatus};localStorage.setItem(cacheKey,JSON.stringify(cache))}catch{}}
-$('hero').onerror=()=>{$('hero').onerror=null;$('hero').src=fallback};function favLabel(){const saved=favs().includes(String(id));$('fav').textContent=saved?'♥ Đã yêu thích':'♡ Yêu thích';$('fav').setAttribute('aria-pressed',String(saved))}
+$('hero').onerror=()=>{
+ const selected=(model?.versions||[]).find(x=>String(x.id)===$('versions').value);
+ const images=selected?.images||[];
+ const current=$('hero').src;
+ const index=images.indexOf(current);
+ const next=images.slice(index+1).find(u=>u!==current);
+ if(next){$('hero').src=next;return;}
+ $('hero').onerror=null;$('hero').src=fallback;
+};function favLabel(){const saved=favs().includes(String(id));$('fav').textContent=saved?'♥ Đã yêu thích':'♡ Yêu thích';$('fav').setAttribute('aria-pressed',String(saved))}
 $('fav').onclick=()=>{if(!model)return;const old=favs();const found=old.includes(String(id));const newer=found?old.filter(x=>x!==String(id)):[String(id),...old];saveFavs(newer);if(!found)rememberModel();favLabel()};$('use').onclick=()=>{localStorage.setItem('veltria:selected-model',JSON.stringify({id,name:model.name,type:model.type,versionId:Number($('versions').value)}));$('use').textContent='✓ Đã lưu lựa chọn'};
 function showVersion(){const v=(model.versions||[]).find(x=>String(x.id)===$('versions').value);if(!v){$('base').textContent='Model chưa có phiên bản công khai.';$('gallery').replaceChildren();$('hero').src=fallback;return;}$('base').textContent='Base model: '+(v.baseModel||'Không rõ');$('gallery').replaceChildren();
 const imgs=Array.isArray(v.images)?v.images:[];
@@ -55,6 +63,7 @@ if(!imgs.length){
   $('gallery').append(note);
   return;
 }
+$('hero').onerror=()=>{const images=imgs;const current=$('hero').src;const index=images.indexOf(current);const next=images.slice(index+1).find(u=>u!==current);if(next){$('hero').src=next}else{$('hero').onerror=null;$('hero').src=fallback}};
 $('hero').alt='Ảnh xem trước '+model.name;
 $('hero').src=imgs[0];v.images.forEach(url=>{const img=document.createElement('img');img.src=url;img.loading='lazy';img.referrerPolicy='no-referrer';img.onerror=()=>{img.onerror=null;img.src=fallback};img.onclick=()=>{ $('hero').src=url; openV21Image(url) };$('gallery').append(img)})}
 

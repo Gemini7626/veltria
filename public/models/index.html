@@ -168,6 +168,12 @@ function render(model){
   card.rel="noopener noreferrer";
 
   const image=model.image;
+  // VELTRIA image repair: resolve missing list previews from the detail API.
+  // Never use unfiltered upstream image URLs.
+  if(!image && model.previewStatus !== "restricted" && !model.v4SkipRecovery && model.id != null){
+    v4ResolvePreview(model,card);
+  }
+
 
   if(image){
     const img=el("img");
@@ -218,6 +224,76 @@ function render(model){
   results.append(card);
   v3Cards.set(modelId,card);
   v3Update();
+}
+
+// Shared, bounded preview recovery for Civitai list results.
+const v4PreviewCache=new Map();
+const v4PreviewPending=new Map();
+let v4PreviewActive=0;
+const v4PreviewQueue=[];
+function v4PreviewTask(fn){
+ return new Promise(resolve=>{
+  v4PreviewQueue.push({fn,resolve});v4PreviewDrain();
+ });
+}
+function v4PreviewDrain(){
+ while(v4PreviewActive<4 && v4PreviewQueue.length){
+  const task=v4PreviewQueue.shift();v4PreviewActive++;
+  Promise.resolve().then(task.fn).then(task.resolve,()=>task.resolve(null))
+   .finally(()=>{v4PreviewActive--;v4PreviewDrain()});
+ }
+}
+async function v4PreviewLookup(id){
+ const key=String(id);
+ if(v4PreviewCache.has(key))return v4PreviewCache.get(key);
+ if(v4PreviewPending.has(key))return v4PreviewPending.get(key);
+ const promise=v4PreviewTask(async()=>{
+  try{
+   const response=await fetch('/api/model/'+encodeURIComponent(key));
+   if(!response.ok)return null;
+   const d=await response.json();
+   const urls=(d.versions||[]).flatMap(v=>v.images||[])
+    .filter(u=>typeof u==='string' && u.startsWith('https://'));
+   const result={image:urls[0]||null,previewImages:[...new Set(urls)].slice(0,8),previewStatus:d.previewStatus||'unknown'};
+   v4PreviewCache.set(key,result);
+   return result;
+  }catch{return null}
+ });
+ v4PreviewPending.set(key,promise);
+ promise.finally(()=>v4PreviewPending.delete(key));
+ return promise;
+}
+async function v4ResolvePreview(model,card){
+ const result=await v4PreviewLookup(model.id);
+ if(!result || !card.isConnected)return;
+ model.previewStatus=result.previewStatus;
+ if(!result.image){
+  const place=card.querySelector('.v2-placeholder');
+  if(place)place.textContent=result.previewStatus==='restricted'
+   ?'🔒 Ảnh giới hạn':'✦ Chưa có ảnh công khai';
+  return;
+ }
+ model.image=result.image;
+ model.previewImages=result.previewImages;
+ const place=card.querySelector('.v2-placeholder');
+ if(!place)return;
+ const img=el('img');
+ img.alt=model.name||'Model';img.loading='lazy';img.referrerPolicy='no-referrer';
+ let index=0;
+ img.onerror=()=>{
+  index++;
+  if(index<result.previewImages.length)img.src=result.previewImages[index];
+  else {img.onerror=null;img.replaceWith(el('div','v2-placeholder','✦ Ảnh không tải được'));}
+ };
+ img.src=result.image;
+ place.replaceWith(img);
+ if(v3Favorites.has(String(model.id))){
+  try{
+   const cache=JSON.parse(localStorage.getItem('veltria:fav-cache')||'{}');
+   cache[String(model.id)]=model;
+   localStorage.setItem('veltria:fav-cache',JSON.stringify(cache));
+  }catch{}
+ }
 }
 
 async function showSavedModels(){
@@ -295,9 +371,13 @@ async function load(append=false){
     if(id!==requestId)return;
 
     const items=data.items||[];
+    let v4MissingBudget=12;
     for(const model of items){
       if(model.id==null || seenIds.has(String(model.id))) continue;
       seenIds.add(String(model.id));
+      if(!model.image && model.previewStatus!=="restricted") {
+        if(v4MissingBudget--<=0) model.v4SkipRecovery=true;
+      }
       render(model);
     }
     v3Update();
