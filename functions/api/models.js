@@ -24,7 +24,7 @@ export async function onRequestGet({ request, env }) {
 
   const params = new URLSearchParams();
 
-  params.set("limit", "40");
+  params.set("limit", "80");
   // Model Hub: khong ep loc SFW
 
   const query = (input.searchParams.get("query") || "")
@@ -33,7 +33,7 @@ export async function onRequestGet({ request, env }) {
   if (query) params.set("query", query);
 
   const type = input.searchParams.get("type");
-  if (["Checkpoint", "LORA"].includes(type)) {
+  if (["Checkpoint", "LORA", "TextualInversion", "Hypernetwork", "AestheticGradient", "Controlnet", "Poses", "Wildcards", "VAE", "Upscaler", "MotionModule", "Workflows", "Other"].includes(type)) {
     params.set("types", type);
   }
 
@@ -85,7 +85,7 @@ export async function onRequestGet({ request, env }) {
 
         const safeImages = [...new Set(
   images.filter(i => typeof i.url === "string" && i.url.startsWith("https://")).map(i => i.url)
-)].slice(0, 8);
+)].slice(0, 24);
 const safeImage = safeImages[0] || null;
 const totalImages = images.length;
 const previewStatus = safeImages.length
