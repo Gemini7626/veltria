@@ -65,7 +65,7 @@ if(!imgs.length){
 }
 $('hero').onerror=()=>{const images=imgs;const current=$('hero').src;const index=images.indexOf(current);const next=images.slice(index+1).find(u=>u!==current);if(next){$('hero').src=next}else{$('hero').onerror=null;$('hero').src=fallback}};
 $('hero').alt='Ảnh xem trước '+model.name;
-$('hero').src=imgs[0];v.images.forEach(url=>{const img=document.createElement('img');img.src=url;img.loading='lazy';img.referrerPolicy='no-referrer';img.onerror=()=>{img.onerror=null;img.src=fallback};img.onclick=()=>{ $('hero').src=url; openV21Image(url) };$('gallery').append(img)})}
+$('hero').src=imgs[0];v.images.forEach(url=>{const img=document.createElement('img');img.src=url;img.loading='lazy';img.referrerPolicy='no-referrer';img.onerror=()=>{img.onerror=null;img.remove();};img.onclick=()=>{ $('hero').src=url; openV21Image(url) };$('gallery').append(img)})}
 
 function openV21Image(url){
   if(!url || url.startsWith('data:'))return;

@@ -186,7 +186,16 @@ function render(model){
         && model.previewImages.length
         ? model.previewImages : [model.image];
       let fallbackIndex = 0;
+      let retried = false;
       img.onerror = () => {
+        if (!retried) {
+          retried = true;
+          const current = img.src;
+          img.src = "";
+          img.src = current;
+          return;
+        }
+        retried = false;
         fallbackIndex++;
         if (fallbackIndex < candidates.length) {
           img.src = candidates[fallbackIndex];
