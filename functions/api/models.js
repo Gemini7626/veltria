@@ -49,7 +49,7 @@ export async function onRequestGet({ request, env }) {
   if (cursor) {
     if (cursor.length > 1000) return json({error:"Cursor không hợp lệ."},400);
     params.set("cursor", cursor);
-  } else if (!query) {
+  } else {
     if (!Number.isSafeInteger(page) || page < 1 || page > 1000)
       return json({error:"Trang không hợp lệ."},400);
     params.set("page", String(page));
@@ -90,7 +90,7 @@ const safeImage = safeImages[0] || null;
 const totalImages = images.length;
 const previewStatus = safeImages.length
   ? "available"
-  : totalImages ? "restricted" : "unknown";
+  : totalImages ? "unavailable" : "missing";
 
         return {
           id: m.id,
@@ -121,7 +121,9 @@ previewImages: safeImages,
       page,
       nextCursor,
       nextPage,
-      hasMore: Boolean(nextCursor || nextPage)
+      hasMore: Boolean(nextCursor || nextPage),
+      resultCount: items.length,
+      totalItems: data.metadata?.totalItems ?? null
     });
   } catch {
     return json({

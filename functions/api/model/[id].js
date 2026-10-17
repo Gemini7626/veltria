@@ -13,7 +13,7 @@ export async function onRequestGet({params,env}){
     previewStatus: versions.some(v=>v.images.length)
       ? "available"
       : (m.modelVersions||[]).some(v=>(v.images||[]).length)
-        ? "restricted" : "missing",
+        ? "unavailable" : "missing",
     url:`https://civitai.com/models/${id}`});
  }catch{return json({error:"Không kết nối được Civitai"},502)}
 }
