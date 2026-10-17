@@ -77,6 +77,20 @@ h1{letter-spacing:-.045em;line-height:1.08}
 .v3-creator{margin-top:6px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#9e8cb9!important}
 .card:focus-within{border-color:#b46aff}
 @media(max-width:430px){.v3-fav{width:33px;height:33px;top:7px;right:7px}.v3-tools button{padding:9px 11px}}
+
+/* VELTRIA v4.7.1 - stable model previews */
+.card{
+  contain:none !important;
+}
+.card img{
+  content-visibility:visible !important;
+  width:100%;
+  aspect-ratio:4/5;
+  height:auto;
+  object-fit:cover;
+  display:block;
+}
+
 </style>
 </head>
 <body>
@@ -469,8 +483,64 @@ async function load(append=false){
   }
 }
 
+
+// VELTRIA v4.7.1 - persistent search state
+function v471SaveState(){
+  const url = new URL(window.location.href);
+  const keyword = query.value.trim();
+
+  if(keyword) url.searchParams.set("q", keyword);
+  else url.searchParams.delete("q");
+
+  if(type) url.searchParams.set("type", type);
+  else url.searchParams.delete("type");
+
+  if(sort.value !== "Most Downloaded")
+    url.searchParams.set("sort", sort.value);
+  else
+    url.searchParams.delete("sort");
+
+  history.replaceState(null, "", url);
+}
+
+function v471RestoreState(){
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
+  query.value = params.get("q") || "";
+
+  const requestedType = params.get("type") || "";
+  const buttons = [
+    ...document.querySelectorAll("[data-type]")
+  ];
+
+  type = buttons.some(
+    b => b.dataset.type === requestedType
+  ) ? requestedType : "";
+
+  buttons.forEach(b => {
+    b.classList.toggle(
+      "active",
+      b.dataset.type === type
+    );
+  });
+
+  const requestedSort = params.get("sort");
+
+  if(
+    requestedSort &&
+    [...sort.options].some(
+      o => o.value === requestedSort
+    )
+  ){
+    sort.value = requestedSort;
+  }
+}
+
 document.getElementById("searchForm").addEventListener("submit",e=>{
   e.preventDefault();
+  v471SaveState();
   load();
 });
 document.querySelectorAll("[data-type]").forEach(btn=>{
@@ -478,11 +548,18 @@ document.querySelectorAll("[data-type]").forEach(btn=>{
     document.querySelectorAll("[data-type]").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
     type=btn.dataset.type;
+    v471SaveState();
     load();
   });
 });
-sort.addEventListener("change",()=>load());
-more.addEventListener("click",()=>{if(nextCursor || next)load(true)});
+sort.addEventListener("change",()=>{
+  v471SaveState();
+  load();
+});
+more.addEventListener("click",()=>{
+  if(nextCursor || next)load(true);
+});
+v471RestoreState();
 load();
 </script>
 </body>
