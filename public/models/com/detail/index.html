@@ -1,39 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Chi tiết model | VELTRIA</title>
-<link rel="stylesheet" href="/models/source.css">
-<style>
-.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.gallery img,.gallery video{width:100%;border-radius:12px;background:#21172f}
-.panel{background:#1d142c;border:1px solid #48335c;padding:16px;border-radius:15px;margin:16px 0}
-.panel a{display:inline-block;margin:7px 0}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit}
-@media(min-width:700px){.gallery{grid-template-columns:repeat(4,minmax(0,1fr))}}
-</style>
+<meta name="robots" content="noindex">
+<title>VELTRIA - Redirect</title>
 </head>
-<body data-source="com">
-<header>
-<a href="/models/">VELTRIA</a>
-<nav>
-<a href="/models/com/">RED</a>
-<a href="/models/com/">COM</a>
-</nav>
-</header>
-<main>
-<a id="back" href="/models/com/">← Quay lại danh sách</a>
-<h1 id="name">Đang tải model...</h1>
-<p id="meta"></p>
-<p id="status"></p>
-<h2>Gallery</h2>
-<div class="gallery" id="gallery"></div>
-<h2>Phiên bản và tải model</h2>
-<div id="versions"></div>
-<h2>Mô tả</h2>
-<div class="panel" id="description"></div>
-</main>
-<script src="/models/detail-source.js" defer></script>
+<body>
+<script>
+const target = "/models/" + location.search + location.hash;
+location.replace(target);
+</script>
+<a href="/models/">Mở VELTRIA Models</a>
 </body>
 </html>

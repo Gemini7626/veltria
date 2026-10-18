@@ -137,9 +137,9 @@ h1{letter-spacing:-.045em;line-height:1.08}
 <div class="filters">
 
 <select id="sort" aria-label="Sắp xếp">
-<option value="Relevance">Liên quan nhất</option>
-<option value="Most Downloaded">Phổ biến</option>
 <option value="Newest">Mới nhất</option>
+<option value="Most Downloaded">Phổ biến</option>
+
 <option value="Highest Rated">Đánh giá cao</option>
 </select>
 </div>
@@ -541,7 +541,7 @@ async function load(append=false){
   const params=new URLSearchParams({
     mode:"public",
     sort:sort.value==="Relevance"
-      ?"Most Downloaded"
+      ?"Newest"
       :sort.value
   });
   const extendedType =
@@ -590,7 +590,7 @@ async function load(append=false){
     status.replaceChildren();
     status.append("Không thể tải API Civitai lúc này. ");
     const link=el("a","","Mở Civitai");
-    link.href="https://civitai.com/models";
+    link.href="https://civitai.red/models";
     link.target="_blank";
     link.rel="noopener noreferrer";
     link.style.color="#c69bff";

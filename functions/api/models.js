@@ -37,7 +37,7 @@ export async function onRequestGet({ request, env }) {
     params.set("types", type);
   }
 
-  const sort = input.searchParams.get("sort");
+  const sort = input.searchParams.get("sort") || "Newest";
   if (["Most Downloaded", "Newest", "Highest Rated"]
       .includes(sort)) {
     params.set("sort", sort);
@@ -125,7 +125,7 @@ previewImages: safeImages,
       previewVideos,
           previewStatus,
           totalImages,
-          url: `https://civitai.com/models/${m.id}`
+          url: `https://civitai.red/models/${m.id}`
         };
       });
 
