@@ -24,7 +24,18 @@ export async function onRequestGet({ request, env }) {
 
   const params = new URLSearchParams();
 
-  params.set("limit", "80");
+  const requestedLimit = Number(
+    input.searchParams.get("limit") || "80"
+  );
+
+  const limit =
+    Number.isInteger(requestedLimit) &&
+    requestedLimit >= 1 &&
+    requestedLimit <= 80
+      ? requestedLimit
+      : 80;
+
+  params.set("limit", String(limit));
   // Model Hub: khong ep loc SFW
 
   const query = (input.searchParams.get("query") || "")
