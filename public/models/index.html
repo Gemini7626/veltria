@@ -658,9 +658,40 @@ sort.addEventListener("change",()=>{
   v471SaveState();
   load();
 });
-more.addEventListener("click",()=>{
-  if(nextCursor || next)load(true);
+
+// VELTRIA Infinite Scroll
+let veltriaScrollBusy = false;
+
+async function veltriaAutoLoad() {
+  if (veltriaScrollBusy) return;
+  if (!(nextCursor || next)) return;
+
+  const remaining =
+    document.documentElement.scrollHeight -
+    window.innerHeight -
+    window.scrollY;
+
+  if (remaining > 1000) return;
+
+  veltriaScrollBusy = true;
+
+  try {
+    await load(true);
+  } finally {
+    veltriaScrollBusy = false;
+  }
+}
+
+window.addEventListener("scroll", veltriaAutoLoad, {
+  passive: true
 });
+
+window.addEventListener("resize", veltriaAutoLoad);
+
+// Ẩn nút Tải thêm
+more.hidden = true;
+more.style.display = "none";
+
 v471RestoreState();
 load();
 document.getElementById("vel-type-select")?.addEventListener(
