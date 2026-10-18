@@ -43,6 +43,14 @@ export async function onRequestGet({ request, env }) {
 
   if (query) params.set("query", query);
 
+  const username = (
+    input.searchParams.get("username") || ""
+  ).trim().slice(0, 100);
+
+  if (username) {
+    params.set("username", username);
+  }
+
   const type = input.searchParams.get("type");
   const allowedTypes = [
   "Checkpoint", "LORA", "LoCon", "LyCORIS",
@@ -70,7 +78,7 @@ if (allowedTypes.includes(type)) {
   if (cursor) {
     if (cursor.length > 1000) return json({error:"Cursor không hợp lệ."},400);
     params.set("cursor", cursor);
-  } else if (!query) {
+  } else {
     if (!Number.isSafeInteger(page) || page < 1 || page > 1000)
       return json({error:"Trang không hợp lệ."},400);
     params.set("page", String(page));
