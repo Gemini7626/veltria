@@ -83,9 +83,31 @@ export async function onRequestGet({ request, env }) {
         const images = (m.modelVersions || [])
           .flatMap(v => v.images || []);
 
-        const safeImages = [...new Set(
-  images.filter(i => typeof i.url === "string" && i.url.startsWith("https://")).map(i => i.url)
-)].slice(0, 24);
+        
+const previewMedia = images
+  .filter(i =>
+    typeof i.url === "string" &&
+    i.url.startsWith("https://")
+  )
+  .map(i => ({
+    url: i.url,
+    type: i.type || null,
+    mimeType: i.mimeType || null
+  }));
+
+const isVideo = i =>
+      /video/i.test(String(i.type || "")) ||
+      /^video\//i.test(String(i.mimeType || "")) ||
+      /\.(mp4|webm|mov)(?:\?|$)/i.test(i.url);
+
+    const safeImages = [...new Set(
+      previewMedia.filter(i => !isVideo(i)).map(i => i.url)
+    )].slice(0, 24);
+
+    const previewVideos = [...new Set(
+      previewMedia.filter(isVideo).map(i => i.url)
+    )].slice(0, 12);
+
 const safeImage = safeImages[0] || null;
 const totalImages = images.length;
 const previewStatus = safeImages.length
@@ -99,6 +121,8 @@ const previewStatus = safeImages.length
           creator: m.creator?.username || "",
           image: safeImage,
 previewImages: safeImages,
+      previewMedia,
+      previewVideos,
           previewStatus,
           totalImages,
           url: `https://civitai.com/models/${m.id}`
