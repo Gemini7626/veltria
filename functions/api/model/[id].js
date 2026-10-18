@@ -9,7 +9,7 @@ export async function onRequestGet({params,env}){
   if(!res.ok)return json({error:"Không tải được model",upstreamStatus:res.status},res.status===404?404:502);
   const m=await res.json();
   const versions=(m.modelVersions||[]).map(v=>({id:v.id,name:v.name,baseModel:v.baseModel,
-files:(v.files||[]).map(f=>({
+files:(v.files||[]).map(f=>({id:f.id??null,hashes:f.hashes||{},
   name:f.name||"",
   sizeKB:f.sizeKB??null,
   type:f.type||"",

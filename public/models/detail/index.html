@@ -169,57 +169,81 @@ document.addEventListener("keydown",e=>{
  if(e.key==="ArrowRight")v6Show(v6Index+1);
 });
 
+
 function showDownloads(version){
- const box=document.getElementById("download-files");
- box.replaceChildren();
+  const box=document.getElementById("download-files");
+  box.replaceChildren();
 
- const files=version?.files||[];
+  const files=version?.files||[];
 
- if(!files.length){
-  box.textContent="Chưa có thông tin tệp tải từ API.";
-  return;
- }
-
- for(const file of files){
-  const row=document.createElement("div");
-  row.className="vel-file";
-
-  const info=document.createElement("div");
-  info.className="vel-file-info";
-
-  const name=document.createElement("strong");
-  name.textContent=file.name||"Model file";
-
-  const meta=document.createElement("small");
-  const size=Number(file.sizeKB);
-
-  const sizeText=Number.isFinite(size)&&size>0
-   ?(size/1024).toFixed(2)+" MB"
-   :"Chưa rõ dung lượng";
-
-  meta.textContent=[
-   file.format||file.type||"File",
-   sizeText
-  ].join(" · ");
-
-  info.append(name,meta);
-  row.append(info);
-
-  if(file.downloadUrl){
-   const link=document.createElement("a");
-   link.href=file.downloadUrl;
-   link.target="_blank";
-   link.rel="noopener noreferrer";
-   link.textContent="⬇ Download";
-   row.append(link);
-  }else{
-   const note=document.createElement("small");
-   note.textContent="Không có URL tải";
-   row.append(note);
+  if(!files.length){
+    box.textContent="Chưa có thông tin tệp tải từ API.";
+    return;
   }
 
-  box.append(row);
- }
+  for(const file of files){
+    const row=document.createElement("div");
+    row.className="vel-file";
+
+    const info=document.createElement("div");
+    info.className="vel-file-info";
+
+    const name=document.createElement("strong");
+    name.textContent=file.name||"Model file";
+
+    const meta=document.createElement("small");
+    const size=Number(file.sizeKB);
+    const sizeText=Number.isFinite(size)&&size>0
+      ? size>=1048576
+        ? (size/1048576).toFixed(2)+" GB"
+        : (size/1024).toFixed(2)+" MB"
+      : "Chưa rõ dung lượng";
+
+    meta.textContent=[
+      file.format||file.type||"File",
+      sizeText
+    ].join(" · ");
+
+    info.append(name,meta);
+
+    const hash=file.hashes?.SHA256||
+               file.hashes?.sha256||
+               file.sha256;
+
+    if(hash){
+      const hashText=document.createElement("small");
+      hashText.textContent="SHA256: "+hash;
+      hashText.style.overflowWrap="anywhere";
+      info.append(hashText);
+    }
+
+    row.append(info);
+
+    if(file.downloadUrl){
+      try{
+        const url=new URL(file.downloadUrl,location.href);
+        if(!["https:","http:"].includes(url.protocol)){
+          throw new Error("Invalid download URL");
+        }
+        const link=document.createElement("a");
+        link.href=url.href;
+        link.target="_blank";
+        link.rel="noopener noreferrer";
+        link.textContent="↓ Download";
+        row.append(link);
+      }catch{
+        const note=document.createElement("small");
+        note.textContent="URL tải không hợp lệ";
+        row.append(note);
+      }
+    }else{
+      const note=document.createElement("small");
+      note.textContent="Không có URL tải";
+      row.append(note);
+    }
+
+    box.append(row);
+  }
 }
 
 let velGallerySource="all";
