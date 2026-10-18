@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Model Hub | VELTRIA</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0915;color:#f8f5ff;font-family:system-ui,Arial,sans-serif}
+header{padding:18px 20px;border-bottom:1px solid #29233c;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:23px;font-weight:900;color:white;text-decoration:none;letter-spacing:.4px}
+main{max-width:1100px;margin:auto;padding:24px 16px 50px}
+.eyebrow{color:#bd91ff;font-size:12px;font-weight:800;letter-spacing:2px}
+h1{font-size:clamp(30px,7vw,52px);margin:10px 0;background:linear-gradient(90deg,#fff,#bc82ff,#ff8bce);color:transparent;background-clip:text}
+.sub{color:#b3aac7;line-height:1.6}
+.search{display:flex;gap:8px;margin:24px 0 16px}
+input,select{background:#1a152b;border:1px solid #403455;border-radius:12px;color:white;padding:13px;min-width:0}
+input{flex:1}
+button{background:linear-gradient(120deg,#7938ef,#bd44e9);border:0;color:white;border-radius:12px;padding:12px 17px;font-weight:700;cursor:pointer}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:24px}
+.filters button{background:#211a34;border:1px solid #403455}
+.filters button.active{background:#7839dd;border-color:#ac79ff}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.card{background:#191329;border:1px solid #302640;border-radius:17px;overflow:hidden;text-decoration:none;color:white}
+.card img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#27203b;display:block}
+.info{padding:13px}
+.info h3{font-size:14px;margin:0 0 8px;overflow-wrap:anywhere}
+.info p{font-size:12px;color:#b7accd;margin:0}
+.status{color:#b8accf;margin:20px 0;line-height:1.6}
+.card:hover{border-color:#a46bff}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* VELTRIA MODEL HUB V2 - presentation only */
+:root{--v2-bg:#0e0a18;--v2-panel:#201630;--v2-line:#48335d;--v2-accent:#b46aff}
+body{background:radial-gradient(ellipse at 10% 0%,#26133a 0,transparent 38%),var(--v2-bg)}
+header{position:sticky;top:0;z-index:30;background:#100b1beF;backdrop-filter:blur(16px);border-bottom-color:#513663;padding:16px 20px}
+.brand{color:#d8a5ff;font-size:clamp(22px,5vw,28px)}
+main{max-width:1240px;padding:28px 16px 90px}
+h1{letter-spacing:-.045em;line-height:1.08}
+.search{padding:7px;border:1px solid #513861;border-radius:19px;background:#1a1228;gap:7px}
+.search input{border:0;background:transparent;min-height:42px;outline:none}
+.search button{min-width:76px}
+.filters{align-items:center;gap:8px}
+.filters button,.filters select{border-radius:99px;min-height:44px}
+.grid{gap:14px}
+.card{border-radius:19px;border:1px solid #48335c;background:#1d142c;box-shadow:0 8px 28px #0002;transition:transform .18s,border-color .18s;min-width:0}
+.card:hover{transform:translateY(-3px);border-color:#ad68ff}
+.card img,.card>.v2-placeholder{aspect-ratio:4/5;object-fit:cover;width:100%;display:block}
+.card img{background:#2c1b43}
+.card .info{padding:14px 13px 16px}
+.card .info h3{font-size:clamp(13px,2.5vw,17px);line-height:1.35;margin-bottom:7px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.card .info p{color:#bcb1d0;font-size:12px}
+.v2-placeholder{display:grid;place-items:center;text-align:center;padding:12px;background:radial-gradient(circle at 65% 25%,#67358e,#231832 72%);color:#d6b7ee;font-weight:700;font-size:13px}
+.status{font-size:13px}
+#more{min-width:160px;min-height:46px}
+@media(min-width:680px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:390px){.search{margin-top:18px}.search input{padding:9px}.search button{min-width:62px;padding:10px}}
+@media(prefers-reduced-motion:reduce){.card{transition:none}}
+
+/* VELTRIA MODEL HUB V2.1 */
+.card{contain:layout paint;}
+.card img{content-visibility:auto;}
+.card:focus-visible,.filters button:focus-visible{outline:2px solid #d7a0ff;outline-offset:3px}
+.v2-placeholder{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 70% 18%,#8140a3 0%,transparent 50%),linear-gradient(145deg,#302043,#131022);font-size:12px;line-height:1.5}
+.v2-placeholder:before{content:'✦';position:absolute;font-size:92px;opacity:.11;transform:rotate(-15deg);z-index:-1}
+@media(max-width:430px){header{padding:13px 16px}.brand{font-size:23px}main{padding:22px 14px 76px}.card .info{padding:12px}.grid{gap:11px}}
+
+/* VELTRIA MODEL HUB V3 */
+.v3-tools{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:0 0 15px}
+.v3-tools button{background:#251a37;border:1px solid #5b4174;border-radius:12px;padding:10px 14px}
+.v3-tools button.active{background:#7839dd;border-color:#c48aff}
+.v3-count{color:#b9a9d0;font-size:12px}
+.card{position:relative}
+.v3-fav{position:absolute;top:9px;right:9px;z-index:2;width:36px;height:36px;padding:0;border-radius:12px;background:#160d25dd;border:1px solid #bda3da77;display:grid;place-items:center;font-size:21px;line-height:1;backdrop-filter:blur(8px)}
+.v3-fav.saved{background:#7839dd;color:white}
+.v3-creator{margin-top:6px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#9e8cb9!important}
+.card:focus-within{border-color:#b46aff}
+@media(max-width:430px){.v3-fav{width:33px;height:33px;top:7px;right:7px}.v3-tools button{padding:9px 11px}}
+
+/* VELTRIA v4.7.1 - stable model previews */
+.card{
+  contain:none !important;
+}
+.card img{
+  content-visibility:visible !important;
+  width:100%;
+  aspect-ratio:4/5;
+  height:auto;
+  object-fit:cover;
+  display:block;
+}
+
+</style>
+</head>
+<body>
+<header>
+<a href="/" class="brand">✦ VELTRIA</a>
+<span style="color:#bca9d9;font-size:13px">MODEL HUB</span>
+</header>
+<main>
+<div class="eyebrow">DISCOVER AI MODELS</div>
+<h1>Explore Models.</h1>
+<p class="sub">Khám phá Checkpoint và LoRA. Chọn model phù hợp với phong cách sáng tạo của bạn.</p>
+
+<form class="search" id="searchForm">
+<input id="query" placeholder="Tìm tên model..." aria-label="Tên model">
+<button type="submit">Tìm</button>
+</form>
+
+<div class="filters">
+
+<select id="sort" aria-label="Sắp xếp">
+<option value="Relevance">Liên quan nhất</option>
+<option value="Most Downloaded">Phổ biến</option>
+<option value="Newest">Mới nhất</option>
+<option value="Highest Rated">Đánh giá cao</option>
+</select>
+</div>
+
+<!-- VELTRIA EXTENDED MODEL TYPES -->
+<div id="vel-model-types" style="margin:14px 0 22px">
+  <label for="vel-type-select"
+    style="display:block;margin-bottom:8px;color:#c9a7ff">
+    Model Type
+  </label>
+  <select id="vel-type-select"
+    style="width:100%;max-width:380px">
+    <option value="">Tất cả Model Type</option>
+    <option value="Checkpoint">Checkpoint</option>
+    <option value="LORA">LoRA</option>
+    <option value="VAE">VAE</option>
+    <option value="Controlnet">ControlNet</option>
+    <option value="Upscaler">Upscaler</option>
+    <option value="TextualInversion">Textual Inversion</option>
+    <option value="MotionModule">Motion Module</option>
+    <option value="Hypernetwork">Hypernetwork</option>
+    <option value="Workflows">Workflows</option>
+    <option value="Poses">Poses</option>
+    <option value="Wildcards">Wildcards</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
+<div class="v3-tools"><button id="v3FavOnly" type="button" aria-pressed="false">♡ Đã lưu</button><span id="v3FavCount" class="v3-count"></span></div>
+<p class="status" id="status">Đang tải danh sách model...</p>
+<div class="grid" id="results"></div>
+<div style="text-align:center;margin-top:24px">
+<button id="more" type="button" hidden>Tải thêm</button>
+</div>
+
+
+</main>
+<script>
+const API="/api/models";
+const results=document.getElementById("results");
+const status=document.getElementById("status");
+const more=document.getElementById("more");
+const query=document.getElementById("query");
+const sort=document.getElementById("sort");
+let type="",next=null,requestId=0,loading=false;
+const seenIds=new Set();
+let nextCursor=null;
+const V3_KEY="veltria:model-favorites:v3";
+let v3Favorites=new Set();
+try{const data=JSON.parse(localStorage.getItem(V3_KEY)||"[]");if(Array.isArray(data))v3Favorites=new Set(data.map(String));}catch{}
+let v3Only=false;
+const v3Cards=new Map();
+function v3Save(){try{localStorage.setItem(V3_KEY,JSON.stringify([...v3Favorites]));}catch{}}
+function v3Update(){
+  const count=document.getElementById("v3FavCount");
+  count.textContent=v3Favorites.size+" model đã lưu trên thiết bị";
+  const btn=document.getElementById("v3FavOnly");
+  btn.classList.toggle("active",v3Only);
+  btn.setAttribute("aria-pressed",String(v3Only));
+  for(const [id,card] of v3Cards){
+    const saved=v3Favorites.has(id);
+    card.hidden=v3Only&&!saved;
+    const fav=card.querySelector(".v3-fav");
+    if(fav){fav.textContent=saved?"♥":"♡";fav.classList.toggle("saved",saved);fav.setAttribute("aria-label",saved?"Bỏ lưu model":"Lưu model yêu thích");fav.setAttribute("aria-pressed",String(saved));}
+  }
+}
+document.getElementById("v3FavOnly").addEventListener("click",()=>{
+ v3Only=!v3Only;
+ v3Update();
+ if(v3Only)showSavedModels();else load();
+});
+
+function el(tag,cls,text){
+  const node=document.createElement(tag);
+  if(cls)node.className=cls;
+  if(text!==undefined)node.textContent=text;
+  return node;
+}
+
+function render(model){
+ if(v3Favorites.has(String(model.id))){
+  try{
+   const cache=JSON.parse(localStorage.getItem("veltria:fav-cache")||"{}");
+   cache[String(model.id)]=model;
+   localStorage.setItem("veltria:fav-cache",JSON.stringify(cache));
+  }catch{}
+ }
+  const card=el("a","card");
+  card.href="/models/detail/?id="+encodeURIComponent(model.id);
+  card.removeAttribute("target");
+  card.rel="noopener noreferrer";
+
+
+  const image=model.image;
+  const candidates=[
+    ...new Set(
+      [image,...(Array.isArray(model.previewImages)
+        ? model.previewImages:[])]
+      .filter(u=>typeof u==="string" && /^https:\/\//i.test(u))
+    )
+  ];
+
+  const img=el("img");
+  img.alt=model.name||"Model";
+  img.loading="lazy";
+  img.decoding="async";
+  img.referrerPolicy="no-referrer";
+
+  let index=0;
+  let recovered=false;
+
+  function unavailable(){
+    img.onerror=null;
+
+    const fallback=el("div","v2-placeholder");
+    const message=el(
+      "div","",
+      "✦ Ảnh chưa tải được"
+    );
+    const retry=el("button","");
+    retry.type="button";
+    retry.textContent="↻ Thử tải lại ảnh";
+
+    retry.style.cssText=[
+      "margin-top:12px",
+      "padding:8px 12px",
+      "border:1px solid #a855f7",
+      "border-radius:10px",
+      "background:#29163d",
+      "color:white",
+      "cursor:pointer"
+    ].join(";");
+
+    retry.onclick=event=>{
+      event.preventDefault();
+      event.stopPropagation();
+
+      index=0;
+      recovered=false;
+      img.onerror=()=>{void tryNext();};
+
+      fallback.replaceWith(img);
+
+      if(candidates.length){
+        img.src=candidates[0];
+      }else{
+        void tryNext();
+      }
+    };
+
+    fallback.append(message,retry);
+    img.replaceWith(fallback);
+  }
+
+  async function tryNext(){
+    index++;
+    if(index<candidates.length){
+      img.src=candidates[index];
+      return;
+    }
+
+    if(!recovered && model.id!=null){
+      recovered=true;
+      const result=await v4PreviewLookup(model.id);
+      if(!img.isConnected)return;
+
+      if(result){
+        model.previewStatus=result.previewStatus;
+        for(const url of result.previewImages||[]){
+          if(typeof url==="string"
+             && /^https:\/\//i.test(url)
+             && !candidates.includes(url)){
+            candidates.push(url);
+          }
+        }
+      }
+
+      if(index<candidates.length){
+        img.src=candidates[index];
+        return;
+      }
+    }
+    unavailable();
+  }
+
+  img.onerror=()=>{void tryNext();};
+
+  if(candidates.length){
+    img.src=candidates[0];
+    card.append(img);
+  }else{
+    const placeholder=el("div","v2-placeholder",
+      model.previewStatus==="restricted"
+        ?"🔒 Ảnh giới hạn"
+        :"✦ Đang tìm ảnh mẫu");
+    card.append(placeholder);
+    if(model.id!=null)v4ResolvePreview(model,card);
+  }
+
+  const modelId=String(model.id);
+  const fav=el("button","v3-fav");
+  fav.type="button";
+  fav.addEventListener("click",event=>{
+    event.preventDefault();event.stopPropagation();
+    if(v3Favorites.has(modelId))v3Favorites.delete(modelId);
+    else v3Favorites.add(modelId);
+    v3Save();v3Update();
+    if(v3Only)showSavedModels();
+  });
+  card.append(fav);
+  const info=el("div","info");
+  info.append(el("h3","",model.name||"Chưa có tên"));
+  info.append(el("p","",model.type||"Model"));
+  if(model.creator)info.append(el("p","v3-creator","@"+model.creator));
+  card.append(info);
+  results.append(card);
+  v3Cards.set(modelId,card);
+  v3Update();
+}
+
+// Shared, bounded preview recovery for Civitai list results.
+const v4PreviewCache=new Map();
+const v4PreviewPending=new Map();
+let v4PreviewActive=0;
+const v4PreviewQueue=[];
+function v4PreviewTask(fn){
+ return new Promise(resolve=>{
+  v4PreviewQueue.push({fn,resolve});v4PreviewDrain();
+ });
+}
+function v4PreviewDrain(){
+ while(v4PreviewActive<4 && v4PreviewQueue.length){
+  const task=v4PreviewQueue.shift();v4PreviewActive++;
+  Promise.resolve().then(task.fn).then(task.resolve,()=>task.resolve(null))
+   .finally(()=>{v4PreviewActive--;v4PreviewDrain()});
+ }
+}
+async function v4PreviewLookup(id){
+ const key=String(id);
+ if(v4PreviewCache.has(key))return v4PreviewCache.get(key);
+ if(v4PreviewPending.has(key))return v4PreviewPending.get(key);
+ const promise=v4PreviewTask(async()=>{
+  try{
+   const response=await fetch('/api/model/'+encodeURIComponent(key));
+   if(!response.ok)return null;
+   const d=await response.json();
+   const urls=(d.versions||[]).flatMap(v=>v.images||[])
+    .filter(u=>typeof u==='string' && u.startsWith('https://'));
+   const result={image:urls[0]||null,previewImages:[...new Set(urls)].slice(0,48),previewStatus:d.previewStatus||'unknown'};
+   v4PreviewCache.set(key,result);
+   return result;
+  }catch{return null}
+ });
+ v4PreviewPending.set(key,promise);
+ promise.finally(()=>v4PreviewPending.delete(key));
+ return promise;
+}
+async function v4ResolvePreview(model,card){
+ const result=await v4PreviewLookup(model.id);
+ if(!result || !card.isConnected)return;
+ model.previewStatus=result.previewStatus;
+ if(!result.image){
+  const place=card.querySelector('.v2-placeholder');
+  if(place)place.textContent=result.previewStatus==='restricted'
+   ?'🔒 Ảnh giới hạn':'✦ Chưa có ảnh công khai';
+  return;
+ }
+ model.image=result.image;
+ model.previewImages=result.previewImages;
+ const place=card.querySelector('.v2-placeholder');
+ if(!place)return;
+ const img=el('img');
+ img.alt=model.name||'Model';img.loading='lazy';img.referrerPolicy='no-referrer';
+ let index=0;
+ img.onerror=()=>{
+  index++;
+  if(index<result.previewImages.length)img.src=result.previewImages[index];
+  else {img.onerror=null;img.replaceWith(el('div','v2-placeholder','✦ Ảnh không tải được'));}
+ };
+ img.src=result.image;
+ place.replaceWith(img);
+ if(v3Favorites.has(String(model.id))){
+  try{
+   const cache=JSON.parse(localStorage.getItem('veltria:fav-cache')||'{}');
+   cache[String(model.id)]=model;
+   localStorage.setItem('veltria:fav-cache',JSON.stringify(cache));
+  }catch{}
+ }
+}
+
+async function showSavedModels(){
+ const token=++requestId;
+ loading=false;
+ results.replaceChildren();
+ v3Cards.clear();
+ more.hidden=true;
+ next=null;
+ nextCursor=null;
+ status.textContent="Đang tải model yêu thích...";
+
+ let cache={};
+ try{cache=JSON.parse(localStorage.getItem("veltria:fav-cache")||"{}")}catch{}
+
+ const ids=[...v3Favorites];
+ for(const modelId of ids){
+  if(token!==requestId||!v3Only)return;
+  let model=cache[modelId];
+
+  if(!model){
+   try{
+    const response=await fetch("/api/model/"+encodeURIComponent(modelId));
+    if(response.ok){
+     const detail=await response.json();
+     const images=(detail.versions||[]).flatMap(v=>v.images||[]);
+     model={
+      id:detail.id,name:detail.name,type:detail.type,
+      creator:detail.creator,image:images[0]||null,
+      previewImages:images,previewStatus:detail.previewStatus
+     };
+     cache[modelId]=model;
+    }
+   }catch{}
+  }
+
+  if(!model)model={id:modelId,name:"Model #"+modelId,type:"Model"};
+
+  const q=query.value.trim().toLowerCase();
+  if(type&&model.type!==type)continue;
+  if(q&&!String(model.name||"").toLowerCase().includes(q))continue;
+  render(model);
+ }
+
+ if(token!==requestId)return;
+ try{localStorage.setItem("veltria:fav-cache",JSON.stringify(cache))}catch{}
+ status.textContent="Đang hiển thị "+results.children.length+
+  " / "+v3Favorites.size+" model yêu thích.";
+}
+
+
+// VELTRIA v5 - relevance ranking
+function v5Normalize(value){
+  return String(value||"")
+    .normalize("NFD")
+    .replace(/[\\u0300-\\u036f]/g,"")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g," ")
+    .trim();
+}
+
+function v5Score(model,keyword){
+  const name=v5Normalize(model.name);
+  const creator=v5Normalize(model.creator);
+  const q=v5Normalize(keyword);
+
+  if(!q)return 0;
+  if(name===q)return 1000;
+  if(name.startsWith(q))return 850;
+  if(name.includes(q))return 700;
+
+  const words=q.split(" ").filter(Boolean);
+  const matched=words.filter(w=>name.includes(w));
+
+  let score=matched.length*80;
+
+  if(words.length && matched.length===words.length){
+    score+=200;
+  }
+
+  if(creator.includes(q))score+=100;
+  if(model.image)score+=5;
+
+  return score;
+}
+
+async function load(append=false){
+ if(v3Only){await showSavedModels();return;}
+  if(append && loading)return;
+  const id=++requestId;
+  loading=true;
+  if(!append){ results.replaceChildren(); v3Cards.clear(); next=null; nextCursor=null; seenIds.clear(); }
+  more.hidden=true;
+  status.textContent="Đang tải model...";
+  const params=new URLSearchParams({
+    mode:"public",
+    sort:sort.value==="Relevance"
+      ?"Most Downloaded"
+      :sort.value
+  });
+  const extendedType =
+    document.getElementById("vel-type-select")?.value || "";
+  if(extendedType)params.set("type",extendedType);
+  else if(type)params.set("type",type);
+  if(query.value.trim())params.set("query",query.value.trim());
+
+  try{
+    if(append){
+      if(nextCursor) params.set("cursor",nextCursor);
+      else if(next) params.set("page",String(next));
+      else { loading=false; return; }
+    }
+    const response=await fetch(API+"?"+params.toString());
+    if(!response.ok)throw new Error("HTTP "+response.status);
+    const data=await response.json();
+    if(id!==requestId)return;
+
+    const items=[...(data.items||[])];
+
+    if(sort.value==="Relevance" && query.value.trim()){
+      const keyword=query.value.trim();
+      items.sort((a,b)=>
+        v5Score(b,keyword)-v5Score(a,keyword)
+      );
+    }
+    for(const model of items){
+      if(model.id==null || seenIds.has(String(model.id))) continue;
+      seenIds.add(String(model.id));
+      render(model);
+    }
+    v3Update();
+    nextCursor=data.nextCursor||null;
+    next=data.hasMore ? (data.nextPage || (nextCursor ? null : Number(data.page)+1)) : null;
+    if(!data.hasMore || (!nextCursor && !next)) next=null;
+    more.hidden=!(nextCursor || next);
+    loading=false;
+    const visible=[...v3Cards.values()].filter(card=>!card.hidden).length;
+    status.textContent=results.children.length
+      ? "Đã tải "+results.children.length+" model công khai. "+(v3Only?"Đang hiển thị "+visible+" model đã lưu trong kết quả.":"")
+      : "Chưa tìm thấy model phù hợp.";
+  }catch(err){
+    if(id!==requestId)return;
+    loading=false;
+    status.replaceChildren();
+    status.append("Không thể tải API Civitai lúc này. ");
+    const link=el("a","","Mở Civitai");
+    link.href="https://civitai.com/models";
+    link.target="_blank";
+    link.rel="noopener noreferrer";
+    link.style.color="#c69bff";
+    status.append(link);
+  }
+}
+
+
+// VELTRIA v4.7.1 - persistent search state
+function v471SaveState(){
+  const url = new URL(window.location.href);
+  const keyword = query.value.trim();
+
+  if(keyword) url.searchParams.set("q", keyword);
+  else url.searchParams.delete("q");
+
+  if(type) url.searchParams.set("type", type);
+  else url.searchParams.delete("type");
+
+  if(sort.value !== "Most Downloaded")
+    url.searchParams.set("sort", sort.value);
+  else
+    url.searchParams.delete("sort");
+
+  history.replaceState(null, "", url);
+}
+
+function v471RestoreState(){
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
+  query.value = params.get("q") || "";
+
+  const requestedType = params.get("type") || "";
+  const buttons = [
+    ...document.querySelectorAll("[data-type]")
+  ];
+
+  type = buttons.some(
+    b => b.dataset.type === requestedType
+  ) ? requestedType : "";
+
+  buttons.forEach(b => {
+    b.classList.toggle(
+      "active",
+      b.dataset.type === type
+    );
+  });
+
+  const requestedSort = params.get("sort");
+
+  if(
+    requestedSort &&
+    [...sort.options].some(
+      o => o.value === requestedSort
+    )
+  ){
+    sort.value = requestedSort;
+  }
+}
+
+document.getElementById("searchForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  v471SaveState();
+  load();
+});
+document.querySelectorAll("[data-type]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll("[data-type]").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    type=btn.dataset.type;
+    v471SaveState();
+    load();
+  });
+});
+sort.addEventListener("change",()=>{
+  v471SaveState();
+  load();
+});
+more.addEventListener("click",()=>{
+  if(nextCursor || next)load(true);
+});
+v471RestoreState();
+load();
+document.getElementById("vel-type-select")?.addEventListener(
+  "change", () => load(false)
+);
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Model Details | VELTRIA</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0915;color:white;font:16px system-ui}header{padding:20px;border-bottom:1px solid #352845;display:flex;justify-content:space-between}header a{font-size:24px;font-weight:900;color:white;text-decoration:none}main{max-width:850px;margin:auto;padding:24px 16px}h1{overflow-wrap:anywhere;font-size:clamp(28px,7vw,44px)}.sub{color:#b9aec9}.panel{background:#1b152b;border:1px solid #382c4d;border-radius:18px;padding:18px;margin:20px 0}img{width:100%;max-height:470px;object-fit:contain;background:#29203e;border-radius:12px}button,a.btn{display:inline-block;border:0;border-radius:12px;padding:13px 16px;background:linear-gradient(120deg,#7938ef,#bd44e9);color:white;font-weight:700;text-decoration:none;margin:6px 6px 6px 0}select{width:100%;padding:12px;border:1px solid #514064;border-radius:10px;background:#241a37;color:white}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gallery img{aspect-ratio:1;object-fit:cover}.desc{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}.tags span{display:inline-block;background:#322443;border-radius:30px;padding:6px 10px;margin:4px;font-size:12px}
+/* VELTRIA MODEL DETAILS V2 - responsive presentation */
+:root{--v2-line:#49355c}
+body{background:radial-gradient(ellipse at 0 0,#231433 0,transparent 45%),#0e0a18}
+header{position:sticky;top:0;z-index:30;align-items:center;gap:10px;background:#100b1bf2;backdrop-filter:blur(14px);border-bottom-color:var(--v2-line)}
+header a{font-size:clamp(21px,4vw,28px);color:#d8a5ff}
+header .sub{font-size:12px;white-space:nowrap}
+main{max-width:1150px;padding:24px 16px 70px}
+#detail{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+#detail[hidden]{display:none}
+#hero{display:block;width:100%;aspect-ratio:4/3;max-height:620px;object-fit:cover;background:radial-gradient(circle at 60% 30%,#4d2a67,#21182f);border:1px solid var(--v2-line);border-radius:20px}
+h1{margin:18px 0 5px;line-height:1.15;letter-spacing:-.035em}
+.panel{background:#1c142b;border:1px solid var(--v2-line);border-radius:20px;padding:20px;margin:17px 0}
+.panel h2{font-size:clamp(20px,4vw,27px);margin:0 0 18px}
+.gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gallery .sub{grid-column:1/-1;display:block;width:100%;margin:12px 0;line-height:1.55;overflow-wrap:anywhere}
+.gallery img{width:100%;aspect-ratio:1;cursor:pointer;border:1px solid #5b4070;border-radius:11px;object-fit:cover}
+.gallery img:hover{border-color:#ba80ff}
+select{min-height:50px;border-radius:12px}
+button,a.btn{cursor:pointer;border-radius:13px}
+.desc{color:#ddd5e8;font-size:14px}
+@media(min-width:800px){#hero{aspect-ratio:16/9}.gallery{grid-template-columns:repeat(5,minmax(0,1fr))}}
+
+/* VELTRIA MODEL DETAILS V2.1 */
+#detail .v21-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0 22px}
+#detail .v21-actions button,#detail .v21-actions .btn{display:flex;align-items:center;justify-content:center;text-align:center;min-width:0;min-height:47px;margin:0;padding:11px 9px;font-size:14px}
+#hero{object-position:center 35%;cursor:zoom-in}
+.gallery img{transition:transform .15s,border-color .15s}
+.gallery img:active{transform:scale(.97)}
+.v21-lightbox[hidden]{display:none}
+.v21-lightbox{position:fixed;inset:0;z-index:100;background:rgba(7,4,14,.96);display:flex;align-items:center;justify-content:center;padding:48px 12px 18px}
+.v21-lightbox img{max-width:100%;max-height:calc(100dvh - 90px);width:auto;height:auto;object-fit:contain;background:transparent}
+.v21-lightbox button{position:absolute;top:12px;right:14px;margin:0;min-width:46px;min-height:42px}
+@media(max-width:430px){header{padding:14px 16px}main{padding:18px 14px 70px}h1{font-size:clamp(26px,7vw,36px)}.panel{padding:16px;margin:14px 0}.panel h2{font-size:21px}#hero{aspect-ratio:4/3}.gallery{gap:7px}}
+
+/* VELTRIA GALLERY V6 PATCH */
+.v6-item{position:relative;min-width:0;padding:0;margin:0;background:#251b38;border:1px solid #5b4070;border-radius:11px;overflow:hidden;aspect-ratio:1;display:block;cursor:pointer}
+.v6-item img,.v6-item video{width:100%;height:100%;object-fit:cover;border:0;border-radius:0;display:block;pointer-events:none}
+.v6-item:focus-visible{outline:3px solid #d9a4ff;outline-offset:2px}
+.v6-play{position:absolute;right:5px;bottom:5px;background:#120b20d9;border-radius:8px;padding:4px 7px;font-size:12px}
+.v6-viewer[hidden]{display:none}
+.v6-viewer{position:fixed;inset:0;z-index:200;background:#080510f5;display:flex;align-items:center;justify-content:center;padding:58px 12px 62px}
+.v6-viewer img,.v6-viewer video{max-width:100%;max-height:calc(100dvh - 125px);width:auto;height:auto;object-fit:contain;border-radius:8px;background:transparent}
+.v6-viewer button{position:absolute;z-index:2;margin:0;min-width:42px;min-height:42px}
+#v6-close{right:12px;top:12px}
+#v6-prev{left:8px;bottom:12px}
+#v6-next{right:8px;bottom:12px}
+#v6-count{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-size:13px;color:#e7d7f5}
+
+#download-files{display:grid;gap:12px}
+.vel-file{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:12px;
+ padding:15px;
+ background:#291d3c;
+ border:1px solid #57416c;
+ border-radius:14px;
+}
+.vel-file-info{min-width:0;flex:1}
+.vel-file-info strong{
+ display:block;
+ overflow-wrap:anywhere;
+ margin-bottom:6px;
+}
+.vel-file-info small{color:#bcaece}
+.vel-file a{
+ padding:12px 16px;
+ border-radius:11px;
+ color:white;
+ text-decoration:none;
+ font-weight:700;
+ background:linear-gradient(120deg,#7438ea,#bd44e9);
+}
+</style><header><a href="/">✦ VELTRIA</a><span class="sub">MODEL DETAILS</span></header><main><p><a style="color:#c99aff" href="/models/">Models</a> / Chi tiết</p><p id="status" class="sub">Đang tải model...</p><div id="detail" hidden><img id="hero" alt="Ảnh model" loading="lazy" decoding="async"><h1 id="name"></h1><p id="meta" class="sub"></p><div class="v21-actions"><button id="fav">♡ Yêu thích</button><a id="civitai" class="btn" target="_blank" rel="noopener noreferrer">↗ Civitai</a></div><section class="panel"><h2>Phiên bản</h2><select id="versions"></select><p id="base" class="sub"></p><h3>Gallery · Ảnh và video mẫu</h3>
+<div id="gallery" class="gallery"></div></section><section class="panel" id="download-panel">
+<h2>⬇ Download Model</h2>
+<p class="sub">Chọn phiên bản để xem các tệp tải xuống.</p>
+<div id="download-files"></div>
+</section>
+<section class="panel"><h2>Mô tả</h2><div id="description" class="desc"></div><div id="tags" class="tags"></div></section><section class="panel"><h2>Sử dụng model</h2><button id="use">✧ Chọn cho Image Studio</button><p class="sub">Lưu lựa chọn cho Image Studio. Chưa thể tạo ảnh nếu chưa kết nối backend chạy AI.</p></section></div></main><div id="v21-lightbox" class="v21-lightbox" hidden role="dialog" aria-label="Xem ảnh lớn"><button id="v21-close" type="button" aria-label="Đóng ảnh">✕</button><img id="v21-large" alt="Ảnh model phóng lớn" loading="lazy" decoding="async"></div><div id="v6-viewer" class="v6-viewer" hidden role="dialog" aria-modal="true" aria-label="Xem ảnh và video mẫu"><button id="v6-close" type="button" aria-label="Đóng">✕</button><button id="v6-prev" type="button" aria-label="Trước">❮</button><span id="v6-count"></span><button id="v6-next" type="button" aria-label="Sau">❯</button><div id="v6-stage"></div></div><script>
+const $=id=>document.getElementById(id),id=Number(new URLSearchParams(location.search).get('id'));let model;const fallback='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450"><rect width="100%" height="100%" fill="#29203e"/><circle cx="430" cy="120" r="180" fill="#643583" opacity=".48"/><path d="M-40 380 Q190 70 640 370" stroke="#ad73da" stroke-width="90" fill="none" opacity=".26"/></svg>');const fkey='veltria:model-favorites:v3';
+const cacheKey='veltria:fav-cache';
+function favs(){try{const x=JSON.parse(localStorage.getItem(fkey)||'[]');return Array.isArray(x)?x.map(String):[]}catch{return []}}
+function saveFavs(x){try{localStorage.setItem(fkey,JSON.stringify(x))}catch{}}
+function rememberModel(){try{const cache=JSON.parse(localStorage.getItem(cacheKey)||'{}');const images=(model.versions||[]).flatMap(v=>v.images||[]);cache[String(id)]={id,name:model.name,type:model.type,creator:model.creator,image:images[0]||null,previewImages:images,previewStatus:model.previewStatus};localStorage.setItem(cacheKey,JSON.stringify(cache))}catch{}}
+$('hero').onerror=()=>{
+ const selected=(model?.versions||[]).find(x=>String(x.id)===$('versions').value);
+ const images=selected?.images||[];
+ const current=$('hero').src;
+ const index=images.indexOf(current);
+ const next=images.slice(index+1).find(u=>u!==current);
+ if(next){$('hero').src=next;return;}
+ $('hero').onerror=null;$('hero').src=fallback;
+};function favLabel(){const saved=favs().includes(String(id));$('fav').textContent=saved?'♥ Đã yêu thích':'♡ Yêu thích';$('fav').setAttribute('aria-pressed',String(saved))}
+$('fav').onclick=()=>{if(!model)return;const old=favs();const found=old.includes(String(id));const newer=found?old.filter(x=>x!==String(id)):[String(id),...old];saveFavs(newer);if(!found)rememberModel();favLabel()};$('use').onclick=()=>{localStorage.setItem('veltria:selected-model',JSON.stringify({id,name:model.name,type:model.type,versionId:Number($('versions').value)}));$('use').textContent='✓ Đã lưu lựa chọn'};
+let v6Items=[],v6Index=0;
+function v6Media(version){
+ const items=[],seen=new Set();
+ const add=(url,type)=>{
+  if(typeof url!=="string"||!/^https:\/\//i.test(url))return;
+  if(seen.has(url))return;seen.add(url);
+  const isVideo=type==="video"||/\.(mp4|webm|mov)(?:[?#]|$)/i.test(url);
+  items.push({url,type:isVideo?"video":"image"});
+ };
+ for(const m of version.media||[]){
+  if(!m||typeof m!=="object")continue;
+  const type=String(m.type||"").toLowerCase();
+  if(type==="image"||type==="video"||type==="gif")add(m.url,type);
+ }
+ for(const url of version.images||[])add(url,"image");
+ return items;
+}
+function v6Show(index){
+ if(!v6Items.length)return;
+ v6Index=(index+v6Items.length)%v6Items.length;
+ const item=v6Items[v6Index],stage=$("v6-stage");stage.replaceChildren();
+ const el=document.createElement(item.type==="video"?"video":"img");
+ if(item.type==="video"){el.controls=true;el.autoplay=true;el.playsInline=true;el.preload="metadata";}
+ el.referrerPolicy="no-referrer";el.src=item.url;
+ el.onerror=()=>{stage.textContent="Không tải được nội dung này. Hãy thử mục khác."};
+ stage.append(el);$("v6-count").textContent=(v6Index+1)+" / "+v6Items.length;
+}
+function v6Open(index){
+ if(!v6Items.length)return;
+ $("v6-viewer").hidden=false;document.body.style.overflow="hidden";
+ v6Show(index);
+}
+function v6Close(){
+ $("v6-viewer").hidden=true;$("v6-stage").replaceChildren();
+ document.body.style.overflow="";
+}
+$("v6-close").onclick=v6Close;
+$("v6-prev").onclick=()=>v6Show(v6Index-1);
+$("v6-next").onclick=()=>v6Show(v6Index+1);
+$("v6-viewer").onclick=e=>{if(e.target===$("v6-viewer"))v6Close()};
+document.addEventListener("keydown",e=>{
+ if($("v6-viewer").hidden)return;
+ if(e.key==="Escape")v6Close();
+ if(e.key==="ArrowLeft")v6Show(v6Index-1);
+ if(e.key==="ArrowRight")v6Show(v6Index+1);
+});
+
+function showDownloads(version){
+ const box=document.getElementById("download-files");
+ box.replaceChildren();
+
+ const files=version?.files||[];
+
+ if(!files.length){
+  box.textContent="Chưa có thông tin tệp tải từ API.";
+  return;
+ }
+
+ for(const file of files){
+  const row=document.createElement("div");
+  row.className="vel-file";
+
+  const info=document.createElement("div");
+  info.className="vel-file-info";
+
+  const name=document.createElement("strong");
+  name.textContent=file.name||"Model file";
+
+  const meta=document.createElement("small");
+  const size=Number(file.sizeKB);
+
+  const sizeText=Number.isFinite(size)&&size>0
+   ?(size/1024).toFixed(2)+" MB"
+   :"Chưa rõ dung lượng";
+
+  meta.textContent=[
+   file.format||file.type||"File",
+   sizeText
+  ].join(" · ");
+
+  info.append(name,meta);
+  row.append(info);
+
+  if(file.downloadUrl){
+   const link=document.createElement("a");
+   link.href=file.downloadUrl;
+   link.target="_blank";
+   link.rel="noopener noreferrer";
+   link.textContent="⬇ Download";
+   row.append(link);
+  }else{
+   const note=document.createElement("small");
+   note.textContent="Không có URL tải";
+   row.append(note);
+  }
+
+  box.append(row);
+ }
+}
+function showVersion(){
+ v6Close();
+ const v=(model.versions||[]).find(x=>String(x.id)===$("versions").value);
+ const gallery=$("gallery");gallery.replaceChildren();v6Items=[];
+ showDownloads(v);
+ if(!v){$("base").textContent="Model chưa có phiên bản công khai.";$("hero").src=fallback;return;}
+ $("base").textContent="Base model: "+(v.baseModel||"Không rõ");
+ v6Items=v6Media(v);
+
+// Fallback: dùng ảnh từ Images API khi version không có ảnh
+if(!v6Items.length && Array.isArray(model.previewImages)){
+ const seen=new Set();
+
+ v6Items=model.previewImages
+  .filter(url=>typeof url==="string" && url.startsWith("https://"))
+  .filter(url=>{
+   if(seen.has(url))return false;
+   seen.add(url);
+   return true;
+  })
+  .map(url=>({url,type:"image"}));
+}
+
+ if(!v6Items.length){
+  $("hero").onerror=null;$("hero").src=fallback;
+  const note=document.createElement("p");note.className="sub";
+  note.textContent="Phiên bản này chưa có ảnh/video mẫu có thể hiển thị.";gallery.append(note);return;
+ }
+ const firstImage=v6Items.find(x=>x.type==="image");
+ $("hero").onerror=()=>{$("hero").onerror=null;$("hero").src=fallback};
+ $("hero").src=firstImage?firstImage.url:fallback;
+ $("hero").alt="Ảnh xem trước "+model.name;
+ v6Items.forEach((item,i)=>{
+  const btn=document.createElement("button");btn.type="button";btn.className="v6-item";
+  btn.setAttribute("aria-label","Xem mẫu "+(i+1));
+  const el=document.createElement(item.type==="video"?"video":"img");
+  el.src=item.url;el.referrerPolicy="no-referrer";
+  if(item.type==="video"){el.muted=true;el.preload="metadata";el.playsInline=true;}
+  else{el.loading="lazy";el.alt="Mẫu "+(i+1);}
+  el.onerror=()=>{btn.remove();};btn.append(el);
+  if(item.type==="video"){const mark=document.createElement("span");mark.className="v6-play";mark.textContent="▶ Video";btn.append(mark);}
+  btn.onclick=()=>{if(item.type==="image")$("hero").src=item.url;v6Open(i)};
+  gallery.append(btn);
+ });
+}
+
+function openV21Image(url){
+  if(!url || url.startsWith('data:'))return;
+  $('v21-large').src=url;
+  $('v21-lightbox').hidden=false;
+  document.body.style.overflow='hidden';
+}
+function closeV21Image(){
+  $('v21-lightbox').hidden=true;
+  $('v21-large').removeAttribute('src');
+  document.body.style.overflow='';
+}
+$('v21-close').onclick=closeV21Image;
+$('v21-lightbox').onclick=e=>{if(e.target===$('v21-lightbox'))closeV21Image()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeV21Image()});
+$('hero').onclick=()=>{const i=v6Items.findIndex(x=>x.url===$('hero').src);if(i>=0)v6Open(i)};window.addEventListener('pageshow',()=>{if(model)favLabel()});
+(async()=>{try{if(!Number.isSafeInteger(id)||id<1)throw Error('ID không hợp lệ');const r=await fetch('/api/model/'+id);const d=await r.json();if(!r.ok)throw Error(d.error||'API lỗi');model=d;$('name').textContent=d.name;$('meta').textContent=[d.type,d.creator&&'Tác giả: '+d.creator].filter(Boolean).join(' · ');$('civitai').href=d.url;$('versions').replaceChildren();d.versions.forEach(v=>{const o=document.createElement('option');o.value=v.id;o.textContent=v.name;$('versions').append(o)});$('versions').onchange=showVersion;showVersion();$('use').disabled=!(d.versions||[]).length;const tmp=document.createElement('div');tmp.innerHTML=d.description||'Chưa có mô tả';$('description').textContent=tmp.textContent;$('tags').replaceChildren();d.tags.slice(0,25).forEach(t=>{const x=document.createElement('span');x.textContent=t;$('tags').append(x)});favLabel();$('status').hidden=true;$('detail').hidden=false}catch(e){$('status').textContent='Không tải được chi tiết: '+e.message}})();</script></html>
