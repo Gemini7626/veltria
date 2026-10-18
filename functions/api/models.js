@@ -89,10 +89,14 @@ if (allowedTypes.includes(type)) {
     });
 
     if (!response.ok) {
+      const invalidFilter = response.status === 400;
       return json({
-        error: "Civitai API tạm thời không khả dụng.",
-        upstreamStatus: response.status
-      }, 502);
+        error: invalidFilter
+          ? "Civitai Red API không chấp nhận bộ lọc này."
+          : "Civitai Red API tạm thời không khả dụng.",
+        upstreamStatus: response.status,
+        requestedType: type || null
+      }, invalidFilter ? 400 : 502);
     }
 
     const data = await response.json();

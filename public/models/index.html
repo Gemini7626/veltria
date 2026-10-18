@@ -205,77 +205,6 @@ h1{letter-spacing:-.045em;line-height:1.08}
 
 </main>
 
-<section id="vel-id-search-v9">
-  <label for="vel-model-id-v9">Tìm model bằng Civitai Red ID</label>
-  <div class="vel-id-controls">
-    <input
-      id="vel-model-id-v9"
-      type="text"
-      inputmode="numeric"
-      placeholder="Ví dụ: 3008155"
-      autocomplete="off"
-    >
-    <button id="vel-id-button-v9" type="button">Tìm ID</button>
-  </div>
-  <div id="vel-id-result-v9" role="status"></div>
-</section>
-
-<script>
-(() => {
-  const input = document.getElementById("vel-model-id-v9");
-  const button = document.getElementById("vel-id-button-v9");
-  const status = document.getElementById("vel-id-result-v9");
-
-  if (!input || !button || !status) return;
-
-  async function searchById() {
-    const id = input.value.trim();
-
-    if (!/^[1-9][0-9]*$/.test(id) ||
-        !Number.isSafeInteger(Number(id))) {
-      status.textContent = "Vui lòng nhập Model ID hợp lệ.";
-      return;
-    }
-
-    button.disabled = true;
-    status.textContent = "Đang kiểm tra model trên Civitai Red...";
-
-    try {
-      const response = await fetch(
-        "/api/model/" + encodeURIComponent(id)
-      );
-
-      if (!response.ok) {
-        throw new Error("API HTTP " + response.status);
-      }
-
-      const data = await response.json();
-
-      if (!data.id) {
-        throw new Error("Không có dữ liệu model.");
-      }
-
-      status.textContent = "Đã tìm thấy: " + (data.name || id);
-
-      window.location.href =
-        "/models/detail/?id=" + encodeURIComponent(id);
-
-    } catch (error) {
-      status.textContent =
-        "Không tìm thấy hoặc không thể truy cập model: " +
-        error.message;
-    } finally {
-      button.disabled = false;
-    }
-  }
-
-  button.addEventListener("click", searchById);
-
-  input.addEventListener("keydown", event => {
-    if (event.key === "Enter") searchById();
-  });
-})();
-</script>
 <script>
 const API="/api/models";
 const results=document.getElementById("results");
@@ -687,12 +616,7 @@ async function load(append=false){
 
     const items=[...(data.items||[])];
 
-    if(sort.value==="Relevance" && query.value.trim()){
-      const keyword=query.value.trim();
-      items.sort((a,b)=>
-        v5Score(b,keyword)-v5Score(a,keyword)
-      );
-    }
+
     for(const model of items){
       if(model.id==null || seenIds.has(String(model.id))) continue;
       seenIds.add(String(model.id));
@@ -749,7 +673,7 @@ function v471RestoreState(){
 
   query.value = params.get("q") || "";
 
-  type = "";
+  type = params.get("type") || "";const typeSelect = document.getElementById("vel-type-select");if(typeSelect && [...typeSelect.options].some(o => o.value === type))typeSelect.value = type;
 
     const requestedSort = params.get("sort");
 
