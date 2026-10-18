@@ -33,9 +33,19 @@ export async function onRequestGet({ request, env }) {
   if (query) params.set("query", query);
 
   const type = input.searchParams.get("type");
-  if (["Checkpoint", "LORA", "TextualInversion", "Hypernetwork", "AestheticGradient", "Controlnet", "Poses", "Wildcards", "VAE", "Upscaler", "MotionModule", "Workflows", "Other"].includes(type)) {
-    params.set("types", type);
-  }
+  const allowedTypes = [
+  "Checkpoint", "LORA", "LoCon", "LyCORIS",
+  "DoRA", "VAE", "Controlnet", "Upscaler",
+  "TextualInversion", "Hypernetwork",
+  "MotionModule", "Workflows", "Poses",
+  "Wildcards", "UNET", "TextEncoder",
+  "LLM", "VLM", "Detection",
+  "AestheticGradient", "Other"
+];
+
+if (allowedTypes.includes(type)) {
+  params.set("types", type);
+}
 
   const sort = input.searchParams.get("sort") || "Newest";
   if (["Most Downloaded", "Newest", "Highest Rated"]
