@@ -19,12 +19,23 @@ export async function onRequestGet({ request, env }) {
     Math.max(1, Number(input.searchParams.get("limit")) || 50)
   );
 
-  const params = new URLSearchParams({
+  const cursor = input.searchParams.get("cursor");
+    const page = Number(input.searchParams.get("page") || 1);
+
+    const params = new URLSearchParams({
     modelId: String(id),
     limit: String(limit)
   });
 
-  const headers = { Accept: "application/json" };
+  if (cursor) {
+    if (cursor.length > 1000)
+      return json({ error: "Invalid cursor" }, 400);
+    params.set("cursor", cursor);
+} else if (Number.isSafeInteger(page) && page > 1 && page <= 10000) {
+    params.set("page", String(page));
+}
+
+const headers = { Accept: "application/json" };
 
   if (env.CIVITAI_API_KEY)
     headers.Authorization = `Bearer ${env.CIVITAI_API_KEY}`;
@@ -58,7 +69,23 @@ export async function onRequestGet({ request, env }) {
         sources: ["red"]
       }));
 
+    const nextPageUrl = data.metadata?.nextPage || "";
+    let nextCursor = data.metadata?.nextCursor || null;
+    let nextPage = null;
+
+    if (nextPageUrl) {
+      try {
+        const u = new URL(nextPageUrl, "https://civitai.red");
+        nextCursor ||= u.searchParams.get("cursor");
+        const n = Number(u.searchParams.get("page"));
+        if (Number.isSafeInteger(n) && n > 0) nextPage = n;
+      } catch {}
+    }
+
     return json({
+      nextCursor,
+      nextPage,
+      hasMore: Boolean(nextCursor || nextPage),
       modelId: id,
       source: "red",
       total: items.length,

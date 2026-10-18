@@ -331,39 +331,140 @@ function velRenderGallery(){
  });
 }
 
-async function velLoadGallery(){
- const requestId=++velGalleryRequest;
- velGalleryItems=[];
- $("vel-gallery-status").textContent="Đang tải Gallery...";
- velRenderGallery();
 
- try{
-  const response=await fetch(
-   "/api/model/gallery?modelId="+encodeURIComponent(id)+"&limit=100"
-  );
-  if(!response.ok)throw Error("Gallery API HTTP "+response.status);
+let velGalleryCursor = null;
+let velGalleryPage = 1;
+let velGalleryHasMore = true;
+let velGalleryBusy = false;
+let velGalleryError = false;
+let velGallerySeen = new Set();
 
-  const data=await response.json();
-  if(requestId!==velGalleryRequest)return;
+async function velLoadGallery(append = false) {
+  if (velGalleryBusy) return;
+  if (append && !velGalleryHasMore) return;
 
-  velGalleryItems=Array.isArray(data.items)?data.items:[];
+  const requestId = append
+    ? velGalleryRequest
+    : ++velGalleryRequest;
 
-  const red=data.sources?.find(x=>x.source==="red");
-  const com=data.sources?.find(x=>x.source==="com");
-
-  velRenderGallery();
-
-  if(false){
-   $("vel-gallery-status").textContent+=
-    " · Một nguồn API hiện không phản hồi.";
+  if (!append) {
+    velGalleryItems = [];
+    velGalleryCursor = null;
+    velGalleryPage = 1;
+    velGalleryHasMore = true;
+    velGallerySeen.clear();
+    velRenderGallery();
   }
- }catch(e){
-  if(requestId!==velGalleryRequest)return;
-  velRenderGallery();
-  $("vel-gallery-status").textContent+=
-   " · Không tải được Gallery cộng đồng.";
- }
+
+  velGalleryBusy = true;
+  velGalleryError = false;
+
+  const status = $("vel-gallery-status");
+  status.textContent = "Đang tải Gallery...";
+
+  try {
+    const params = new URLSearchParams({
+      modelId: String(id),
+      limit: "80"
+    });
+
+    if (velGalleryCursor) {
+      params.set("cursor", velGalleryCursor);
+    } else {
+      params.set("page", String(velGalleryPage));
+    }
+
+    const response = await fetch(
+      "/api/model/gallery?" + params
+    );
+
+    if (!response.ok)
+      throw Error("Gallery API HTTP " + response.status);
+
+    const data = await response.json();
+
+    if (requestId !== velGalleryRequest) return;
+
+    const items = Array.isArray(data.items) ? data.items : [];
+
+    let added = 0;
+
+    for (const item of items) {
+      if (!item.url) continue;
+
+      const key = item.id != null
+        ? "id:" + item.id
+        : "url:" + item.url;
+
+      if (velGallerySeen.has(key)) continue;
+
+      velGallerySeen.add(key);
+      velGalleryItems.push(item);
+      added++;
+    }
+
+    const oldCursor = velGalleryCursor;
+    const oldPage = velGalleryPage;
+
+    velGalleryCursor = data.nextCursor || null;
+
+    if (data.nextPage) {
+      velGalleryPage = Number(data.nextPage);
+    } else {
+      velGalleryPage++;
+    }
+
+    velGalleryHasMore =
+      Boolean(data.hasMore) &&
+      (velGalleryCursor !== oldCursor ||
+       velGalleryPage !== oldPage);
+
+    velRenderGallery();
+
+    status.textContent += velGalleryHasMore
+      ? " · Cuộn xuống để tải tiếp"
+      : " · Đã đến cuối Gallery";
+
+  } catch (e) {
+    if (requestId !== velGalleryRequest) return;
+    velGalleryError = true;
+    status.textContent =
+      "Không tải được Gallery. Cuộn xuống để thử lại.";
+  } finally {
+    velGalleryBusy = false;
+  }
 }
+
+let velGalleryScrollTimer = null;
+
+function velGalleryAutoScroll() {
+  if (velGalleryBusy || !velGalleryHasMore) return;
+
+  const remaining =
+    document.documentElement.scrollHeight -
+    window.innerHeight -
+    window.scrollY;
+
+  if (remaining < 1200) {
+    clearTimeout(velGalleryScrollTimer);
+
+    velGalleryScrollTimer = setTimeout(() => {
+      velLoadGallery(true);
+    }, 350);
+  }
+}
+
+window.addEventListener(
+  "scroll",
+  velGalleryAutoScroll,
+  { passive: true }
+);
+
+window.addEventListener(
+  "resize",
+  velGalleryAutoScroll
+);
+
 
 document.querySelectorAll("[data-gallery-source]").forEach(btn=>{
  btn.addEventListener("click",()=>{
