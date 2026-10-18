@@ -262,6 +262,11 @@ function render(model){
   function unavailable(){
     img.onerror=null;
 
+    if((model.previewVideos || []).length){
+      img.remove();
+      if(velVideoPreview(model,card)) return;
+    }
+
     const fallback=el("div","v2-placeholder");
     const message=el(
       "div","",
@@ -343,9 +348,11 @@ function render(model){
       model.previewStatus==="restricted"
         ?"🔒 Ảnh giới hạn"
         :"✦ Đang tìm ảnh mẫu");
-    card.append(placeholder);
-    if(!velVideoPreview(model,card) && model.id!=null)
-      v4ResolvePreview(model,card);
+    if(!velVideoPreview(model,card)){
+      card.append(placeholder);
+      if(model.id!=null)
+        v4ResolvePreview(model,card);
+    }
   }
 
   const modelId=String(model.id);
