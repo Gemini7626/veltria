@@ -147,6 +147,7 @@ h1{letter-spacing:-.045em;line-height:1.08}
 <p class="sub">Khám phá Checkpoint và LoRA. Chọn model phù hợp với phong cách sáng tạo của bạn.</p>
 
 <form class="search" id="searchForm">
+<select id="vel-search-mode" aria-label="Chế độ tìm kiếm"><option value="model">Tên model</option><option value="creator">Tác giả</option></select>
 <input id="query" placeholder="Tìm tên model..." aria-label="Tên model">
 <button type="submit">Tìm</button>
 </form>
@@ -211,6 +212,7 @@ const results=document.getElementById("results");
 const status=document.getElementById("status");
 const more=document.getElementById("more");
 const query=document.getElementById("query");
+const velSearchMode=document.getElementById("vel-search-mode");
 const sort=document.getElementById("sort");
 let type="",next=null,requestId=0,loading=false;
 const seenIds=new Set();
@@ -601,7 +603,7 @@ async function load(append=false){
     document.getElementById("vel-type-select")?.value || "";
   if(extendedType)params.set("type",extendedType);
   else if(type)params.set("type",type);
-  if(query.value.trim())params.set("query",query.value.trim());
+  if(query.value.trim())params.set(velSearchMode.value==="creator"?"username":"query",query.value.trim());
 
   try{
     if(append){
@@ -658,11 +660,12 @@ function v471SaveState(){
   if(type) url.searchParams.set("type", type);
   else url.searchParams.delete("type");
 
-  if(sort.value !== "Most Downloaded")
+  if (sort.value !== "Most Downloaded")
     url.searchParams.set("sort", sort.value);
   else
     url.searchParams.delete("sort");
 
+  url.searchParams.set("mode", velSearchMode.value);
   history.replaceState(null, "", url);
 }
 
@@ -672,6 +675,7 @@ function v471RestoreState(){
   );
 
   query.value = params.get("q") || "";
+velSearchMode.value = params.get("mode")==="creator"?"creator":"model";
 
   type = params.get("type") || "";const typeSelect = document.getElementById("vel-type-select");if(typeSelect && [...typeSelect.options].some(o => o.value === type))typeSelect.value = type;
 
@@ -689,6 +693,9 @@ function v471RestoreState(){
 
 document.getElementById("searchForm").addEventListener("submit",e=>{
   e.preventDefault();
+  const u=new URL(window.location.href);
+  u.searchParams.set("mode",velSearchMode.value);
+  history.replaceState(null,"",u);
   v471SaveState();
   load();
 });
