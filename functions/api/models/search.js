@@ -29,12 +29,22 @@ export async function onRequestGet({ request, env }) {
   const values = [];
 
   if (query) {
-    if (/^\d+$/.test(query)) {
-      conditions.push("(id = ? OR name LIKE ? COLLATE NOCASE)");
-      values.push(Number(query), `%${query}%`);
+    const words = query.split(/\\s+/).filter(Boolean).slice(0, 6);
+    const escapeLike = value =>
+      value.replace(/[\\\\%_]/g, char => "\\\\" + char);
+
+    const wordConditions = words.map(word => {
+      values.push(`%${escapeLike(word)}%`);
+      return "name LIKE ? ESCAPE '\\\\' COLLATE NOCASE";
+    });
+
+    if (/^\\d+$/.test(query) && Number.isSafeInteger(Number(query))) {
+      conditions.push(
+        "(id = ? OR (" + wordConditions.join(" AND ") + "))"
+      );
+      values.splice(values.length - words.length, 0, Number(query));
     } else {
-      conditions.push("name LIKE ? COLLATE NOCASE");
-      values.push(`%${query}%`);
+      conditions.push("(" + wordConditions.join(" AND ") + ")");
     }
   }
 
@@ -80,15 +90,26 @@ export async function onRequestGet({ request, env }) {
         raw = JSON.parse(row.raw_json || "{}");
       } catch {}
 
+      const versions = Array.isArray(raw.modelVersions)
+        ? raw.modelVersions : [];
+
+      const previewImages = versions
+        .flatMap(v => Array.isArray(v.images) ? v.images : [])
+        .map(img => typeof img === "string" ? img : img?.url)
+        .filter(u => typeof u === "string" && /^https:\\/\\//i.test(u))
+        .slice(0, 24);
+
       return {
         ...raw,
         id: row.id,
         name: row.name,
         type: row.type,
-        creator: row.creator,
+        creator: row.creator || raw.creator?.username || null,
         description: row.description,
         url: row.url,
-        nsfw: Boolean(row.nsfw)
+        nsfw: Boolean(row.nsfw),
+        image: previewImages[0] || null,
+        previewImages
       };
     });
 
