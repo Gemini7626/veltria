@@ -1,0 +1,71 @@
+name: VELTRIA Historical Model Backfill
+
+on:
+  schedule:
+    - cron: "15 0,6,12,18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: veltria-historical-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Sync historical models
+        env:
+          SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "$SYNC_SECRET" ]; then
+            echo "ERROR: SYNC_SECRET is missing"
+            exit 1
+          fi
+
+          for i in $(seq 1 10); do
+            echo "===== BACKFILL $i / 10 ====="
+
+            response=$(curl \
+              --fail-with-body \
+              --silent \
+              --show-error \
+              --max-time 90 \
+              --retry 2 \
+              --retry-delay 5 \
+              -X POST \
+              -H "Authorization: Bearer ${SYNC_SECRET}" \
+              "https://veltria.pages.dev/api/sync/backfill")
+
+            echo "$response" | jq '{
+              ok,
+              saved,
+              totalProcessed,
+              hasMore,
+              status
+            }'
+
+            if ! echo "$response" | jq -e '.ok == true' >/dev/null; then
+              echo "ERROR: Backfill returned an error"
+              exit 1
+            fi
+
+            if echo "$response" | jq -e '.hasMore == false' >/dev/null; then
+              echo "Backfill completed"
+              break
+            fi
+
+            sleep 8
+          done
+
+          echo "===== DATABASE STATUS ====="
+          curl --fail --silent --show-error \
+            "https://veltria.pages.dev/api/sync/status" \
+            | jq '{ok, database, totalModels, syncJobs}'
