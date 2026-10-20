@@ -31,8 +31,18 @@ export async function onRequestPost({ request, env }) {
 
   try {
     const state = await db.prepare(
-      "SELECT cursor, next_page, total_processed FROM sync_state WHERE sync_key = ?"
+      "SELECT cursor, next_page, total_processed, status FROM sync_state WHERE sync_key = ?"
     ).bind(key).first();
+
+    if (state?.status === "completed") {
+      return reply({
+        ok: true,
+        saved: 0,
+        totalProcessed: state.total_processed || 0,
+        hasMore: false,
+        status: "completed"
+      });
+    }
 
     const params = new URLSearchParams({
       limit: "40",
@@ -153,7 +163,9 @@ export async function onRequestPost({ request, env }) {
         next.searchParams.get("cursor") || nextCursor;
     }
 
-    const hasMore = Boolean(nextPage || nextCursor);
+    const hasMore = items.length > 0 &&
+      Boolean(nextPage || nextCursor) &&
+      (!nextPage || nextPage !== url);
     const total = (state?.total_processed || 0) + saved;
 
     await db.prepare(`
