@@ -35,7 +35,7 @@ export async function onRequestGet({ request, env }) {
 
     const wordConditions = words.map(word => {
       values.push(`%${escapeLike(word)}%`);
-      return "name LIKE ? ESCAPE '\\\\' COLLATE NOCASE";
+      return "name LIKE ? COLLATE NOCASE";
     });
 
     if (/^\\d+$/.test(query) && Number.isSafeInteger(Number(query))) {
