@@ -66,9 +66,10 @@ if (allowedTypes.includes(type)) {
   params.set("types", type);
 }
 
-  const sort = input.searchParams.get("sort") || "Newest";
-  if (["Most Downloaded", "Newest", "Highest Rated"]
-      .includes(sort)) {
+  const requestedSort = input.searchParams.get("sort");
+  const sort = requestedSort || "Newest";
+  if ((!query || requestedSort) &&
+      ["Most Downloaded", "Newest", "Highest Rated"].includes(sort)) {
     params.set("sort", sort);
   }
 
@@ -81,7 +82,9 @@ if (allowedTypes.includes(type)) {
   } else {
     if (!Number.isSafeInteger(page) || page < 1 || page > 1000)
       return json({error:"Trang không hợp lệ."},400);
-    params.set("page", String(page));
+    if (!query || page > 1) {
+      params.set("page", String(page));
+    }
   }
 
   const headers = { Accept: "application/json" };
