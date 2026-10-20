@@ -611,7 +611,11 @@ async function load(append=false){
       else if(next) params.set("page",String(next));
       else { loading=false; return; }
     }
-    const response=await fetch(API+"?"+params.toString());
+    const searchActive=query.value.trim().length>0;
+    const apiUrl=searchActive
+      ? "/api/models/search?"+params.toString()
+      : API+"?"+params.toString();
+    const response=await fetch(apiUrl);
     if(!response.ok)throw new Error("HTTP "+response.status);
     const data=await response.json();
     if(id!==requestId)return;
