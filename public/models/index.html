@@ -736,6 +736,17 @@ window.addEventListener("scroll", veltriaAutoLoad, {
 
 window.addEventListener("resize", veltriaAutoLoad);
 
+// Kiem tra tai them sau khi render
+const veltriaOriginalLoad = load;
+load = async function(append=false) {
+  const result = await veltriaOriginalLoad(append);
+  if (nextCursor || next) {
+    requestAnimationFrame(veltriaAutoLoad);
+  }
+  return result;
+};
+
+
 // Ẩn nút Tải thêm
 more.hidden = true;
 more.style.display = "none";
