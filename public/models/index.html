@@ -612,9 +612,7 @@ async function load(append=false){
       else { loading=false; return; }
     }
     const searchActive=query.value.trim().length>0;
-    const apiUrl=searchActive
-      ? "/api/models/search?"+params.toString()
-      : API+"?"+params.toString();
+    const apiUrl=API+"?"+params.toString();
     const response=await fetch(apiUrl);
     if(!response.ok)throw new Error("HTTP "+response.status);
     const data=await response.json();
