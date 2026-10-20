@@ -442,7 +442,14 @@ function velRenderGallery(){
   $("hero").src=fallback;
  };
  if(velGallerySource==="all"){
-  $("hero").src=first?first.url:fallback;
+  const cover=version?.coverImage;
+    const preferredCover=
+      typeof cover==="string" &&
+      cover.startsWith("https://")
+        ? cover
+        : null;
+
+    $("hero").src=preferredCover||first?.url||fallback;
  }
 
  v6Items.forEach((item,i)=>{
