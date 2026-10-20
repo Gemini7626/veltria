@@ -8,7 +8,24 @@ export async function onRequestGet({params,env}){
   const res=await fetch(`https://civitai.red/api/v1/models/${id}`,{headers,signal:AbortSignal.timeout(12000)});
   if(!res.ok)return json({error:"Không tải được model",upstreamStatus:res.status},res.status===404?404:502);
   const m=await res.json();
-  const versions=(m.modelVersions||[]).map(v=>({id:v.id,name:v.name,baseModel:v.baseModel,
+  const versions=[...(m.modelVersions||[])]
+  .sort((a,b)=>{
+    const ta=Date.parse(a.publishedAt||a.createdAt||a.updatedAt||"")||0;
+    const tb=Date.parse(b.publishedAt||b.createdAt||b.updatedAt||"")||0;
+    return tb-ta;
+  })
+  .map(v=>({
+    id:v.id,
+    name:v.name,
+    baseModel:v.baseModel,
+    publishedAt:v.publishedAt||null,
+    createdAt:v.createdAt||null,
+    updatedAt:v.updatedAt||null,
+    downloadCount:v.stats?.downloadCount??null,
+    coverImage:(v.images||[]).find(i=>
+      typeof i.url==="string" &&
+      i.url.startsWith("https://")
+    )?.url||null,
 files:(v.files||[]).map(f=>({id:f.id??null,hashes:f.hashes||{},
   name:f.name||"",
   sizeKB:f.sizeKB??null,
