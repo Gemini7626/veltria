@@ -96,7 +96,7 @@ export async function onRequestGet({ request, env }) {
       const previewImages = versions
         .flatMap(v => Array.isArray(v.images) ? v.images : [])
         .map(img => typeof img === "string" ? img : img?.url)
-        .filter(u => typeof u === "string" && /^https:\\/\\//i.test(u))
+        .filter(u => typeof u === "string" && /^https:\/\//i.test(u))
         .slice(0, 24);
 
       return {
