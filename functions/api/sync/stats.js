@@ -23,6 +23,35 @@ export async function onRequestGet({ env }) {
       FROM model_versions
     `).first();
 
+
+    const duplicates = await env.DB.prepare(`
+      SELECT
+        COUNT(*) AS duplicateNameCreatorGroups,
+        COALESCE(SUM(groupSize), 0) AS duplicateModelRecords
+      FROM (
+        SELECT COUNT(*) AS groupSize
+        FROM models
+        GROUP BY LOWER(TRIM(name)), LOWER(TRIM(creator))
+        HAVING COUNT(*) > 1
+      )
+    `).first();
+
+    const versionStats = await env.DB.prepare(`
+      SELECT COUNT(*) AS modelsWithMultipleVersions
+      FROM (
+        SELECT model_id
+        FROM model_versions
+        GROUP BY model_id
+        HAVING COUNT(*) > 1
+      )
+    `).first();
+
+    const idStats = await env.DB.prepare(`
+      SELECT MIN(id) AS oldestModelId,
+             MAX(id) AS newestModelId
+      FROM models
+    `).first();
+
     const totalModels = models?.totalModels || 0;
     const modelsWithVersions = versions?.modelsWithVersions || 0;
 
@@ -30,6 +59,11 @@ export async function onRequestGet({ env }) {
       ok: true,
       source: "VELTRIA D1",
       totalModels,
+      duplicateNameCreatorGroups: duplicates?.duplicateNameCreatorGroups || 0,
+      duplicateModelRecords: duplicates?.duplicateModelRecords || 0,
+      modelsWithMultipleVersions: versionStats?.modelsWithMultipleVersions || 0,
+      oldestModelId: idStats?.oldestModelId ?? null,
+      newestModelId: idStats?.newestModelId ?? null,
       totalVersions: versions?.totalVersions || 0,
       modelsWithVersions,
       modelsWithoutVersions: Math.max(
