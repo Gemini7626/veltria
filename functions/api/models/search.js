@@ -62,8 +62,8 @@ export async function onRequestGet({ request, env }) {
     ? "WHERE " + conditions.join(" AND ")
     : "";
 
-  const order = sort === "Newest"
-    ? "ORDER BY id DESC"
+  const order = sort === "Oldest"
+    ? "ORDER BY id ASC"
     : "ORDER BY id DESC";
 
   try {
