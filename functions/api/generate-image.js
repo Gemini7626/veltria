@@ -8,7 +8,7 @@ export async function onRequestPost({ request, env }) {
       }
     });
 
-  // Chưa cấu hình AI thì không thực hiện yêu cầu.
+  // 1. Kiem tra Workers AI
   if (!env.AI) {
     return json({
       ok: false,
@@ -16,7 +16,7 @@ export async function onRequestPost({ request, env }) {
     }, 503);
   }
 
-  // Chưa bật API công khai.
+  // 2. Kiem tra cong tac API
   if (env.IMAGE_API_ENABLED !== "true") {
     return json({
       ok: false,
@@ -24,23 +24,36 @@ export async function onRequestPost({ request, env }) {
     }, 403);
   }
 
-
-  // Chi cho phep yeu cau co ma bi mat hop le.
+  // 3. Kiem tra Secret tren Cloudflare
   const secret = env.VELTRIA_AI_SECRET;
+
+  if (typeof secret !== "string" || !secret) {
+    return json({
+      ok: false,
+      error: "SERVER_SECRET_MISSING"
+    }, 503);
+  }
+
+  // 4. Kiem tra khoa nguoi dung
   const supplied = request.headers.get("X-Veltria-Key");
 
-  if (!secret || !supplied || supplied !== secret) {
+  if (!supplied || supplied !== secret) {
     return json({
       ok: false,
       error: "UNAUTHORIZED"
     }, 401);
   }
 
+  // 5. Doc prompt
   let body;
+
   try {
     body = await request.json();
   } catch {
-    return json({ ok: false, error: "INVALID_JSON" }, 400);
+    return json({
+      ok: false,
+      error: "INVALID_JSON"
+    }, 400);
   }
 
   const prompt = String(body.prompt || "").trim();
@@ -52,6 +65,7 @@ export async function onRequestPost({ request, env }) {
     }, 400);
   }
 
+  // 6. Goi AI tao anh
   try {
     const result = await env.AI.run(
       "@cf/black-forest-labs/flux-1-schnell",
@@ -69,8 +83,10 @@ export async function onRequestPost({ request, env }) {
       ok: true,
       image: `data:image/jpeg;base64,${result.image}`
     });
-  } catch (err) {
-    console.error("Image generation failed:", err);
+
+  } catch (error) {
+    console.error("AI generation failed", error);
+
     return json({
       ok: false,
       error: "IMAGE_GENERATION_FAILED"
