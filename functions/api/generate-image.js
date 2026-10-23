@@ -24,6 +24,18 @@ export async function onRequestPost({ request, env }) {
     }, 403);
   }
 
+
+  // Chi cho phep yeu cau co ma bi mat hop le.
+  const secret = env.VELTRIA_AI_SECRET;
+  const supplied = request.headers.get("X-Veltria-Key");
+
+  if (!secret || !supplied || supplied !== secret) {
+    return json({
+      ok: false,
+      error: "UNAUTHORIZED"
+    }, 401);
+  }
+
   let body;
   try {
     body = await request.json();
