@@ -71,6 +71,12 @@ $('generate').addEventListener('click',async()=>{
 })();
 let aiAuthenticated = false;
 
+const authTest = document.getElementById("aiAuthStatus");
+if (authTest) {
+  authTest.textContent = "JavaScript đã khởi động";
+}
+
+
 async function checkAIAuth() {
   try {
     const res = await fetch("/api/ai-auth/status", {
