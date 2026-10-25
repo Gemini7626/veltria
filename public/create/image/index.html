@@ -61,9 +61,9 @@ $('clear').addEventListener('click',()=>{$('result').replaceChildren(document.cr
 $('generate').addEventListener('click',async()=>{
  if(active)return;const prompt=$('prompt').value.trim(),key=$('key').value.trim();
  if(prompt.length<3){$('status').textContent='Vui lòng nhập prompt tối thiểu 3 ký tự.';return}
- if(!aiAuthenticated && !key){$('status').textContent='Vui lòng đăng nhập AI trước.';return}
+ if(!aiAuthenticated){$('status').textContent='Vui lòng đăng nhập AI trước.';return}
  active=true;$('generate').disabled=true;$('status').className='hint';$('status').textContent='Đang tạo ảnh, vui lòng chờ...';$('downloads').classList.add('hidden');
- try{const res=await fetch('/api/generate-image',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Veltria-Key':key},body:JSON.stringify({prompt}),cache:'no-store'});
+ try{const res=await fetch('/api/generate-image',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',},body:JSON.stringify({prompt}),cache:'no-store'});
  const data=await res.json().catch(()=>({}));if(!res.ok||!data.ok||!data.image)throw new Error(data.error||('HTTP '+res.status));
  const img=document.createElement('img');img.alt='Ảnh do VELTRIA AI tạo';img.src=data.image;$('result').replaceChildren(img);$('download').href=data.image;$('downloads').classList.remove('hidden');$('status').className='ok';$('status').textContent='Tạo ảnh thành công!';
  }catch(e){$('status').className='error';$('status').textContent='Không tạo được ảnh: '+e.message}finally{active=false;$('generate').disabled=false}
