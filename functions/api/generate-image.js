@@ -1,3 +1,4 @@
+import { hasAISession } from "../_lib/ai-session.js";
 export async function onRequestPost({ request, env }) {
   const json = (data, status = 200) =>
     new Response(JSON.stringify(data), {
@@ -36,8 +37,9 @@ export async function onRequestPost({ request, env }) {
 
   // 4. Kiem tra khoa nguoi dung
   const supplied = request.headers.get("X-Veltria-Key");
+  const sessionValid = await hasAISession(request, env);
 
-  if (!supplied || supplied !== secret) {
+  if (!sessionValid && (!supplied || supplied !== secret)) {
     return json({
       ok: false,
       error: "UNAUTHORIZED"

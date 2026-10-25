@@ -7,6 +7,40 @@
 <main><div class="hero"><h1>AI Studio</h1><p>Tạo ảnh bằng AI ngay trên VELTRIA. Video Studio đang chờ kết nối bộ máy tạo video.</p></div>
 <div class="tabs"><button id="imageTab" class="active" type="button">✦ Image</button><button id="videoTab" type="button">▣ Video</button></div>
 <section id="imagePanel" class="panel">
+
+<div id="aiAuthPanel" class="panel" style="margin-bottom:16px">
+  <h3>VELTRIA AI Access</h3>
+
+  <p id="aiAuthStatus" class="hint">
+    Đang kiểm tra phiên đăng nhập...
+  </p>
+
+  <div id="aiLoginForm">
+    <label for="aiLoginKey">Khóa đăng nhập cá nhân</label>
+    <input
+      id="aiLoginKey"
+      type="password"
+      autocomplete="off"
+      placeholder="Nhập khóa một lần"
+    >
+
+    <div class="actions">
+      <button id="aiLoginBtn" type="button">
+        Đăng nhập AI
+      </button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button
+      id="aiLogoutBtn"
+      type="button"
+      class="hidden"
+    >
+      Đăng xuất
+    </button>
+  </div>
+</div>
 <div class="grid"><div><label for="model">Model</label><select id="model"><option value="flux">FLUX.1 Schnell — Cloudflare AI</option></select></div><div><label for="key">Khóa truy cập cá nhân</label><input id="key" type="password" autocomplete="off" placeholder="Nhập VELTRIA AI key"></div></div>
 <p class="hint">Khóa chỉ giữ trong trang đang mở, không lưu localStorage hoặc đưa vào GitHub. Không chia sẻ khóa với người khác.</p>
 <label for="prompt">Prompt tạo ảnh</label><textarea id="prompt" maxlength="2000" placeholder="A futuristic city at night, cinematic lighting, highly detailed..."></textarea>
@@ -27,12 +61,81 @@ $('clear').addEventListener('click',()=>{$('result').replaceChildren(document.cr
 $('generate').addEventListener('click',async()=>{
  if(active)return;const prompt=$('prompt').value.trim(),key=$('key').value.trim();
  if(prompt.length<3){$('status').textContent='Vui lòng nhập prompt tối thiểu 3 ký tự.';return}
- if(!key){$('status').textContent='Vui lòng nhập khóa truy cập cá nhân.';return}
+ if(!aiAuthenticated && !key){$('status').textContent='Vui lòng đăng nhập AI trước.';return}
  active=true;$('generate').disabled=true;$('status').className='hint';$('status').textContent='Đang tạo ảnh, vui lòng chờ...';$('downloads').classList.add('hidden');
- try{const res=await fetch('/api/generate-image',{method:'POST',headers:{'Content-Type':'application/json','X-Veltria-Key':key},body:JSON.stringify({prompt}),cache:'no-store'});
+ try{const res=await fetch('/api/generate-image',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Veltria-Key':key},body:JSON.stringify({prompt}),cache:'no-store'});
  const data=await res.json().catch(()=>({}));if(!res.ok||!data.ok||!data.image)throw new Error(data.error||('HTTP '+res.status));
  const img=document.createElement('img');img.alt='Ảnh do VELTRIA AI tạo';img.src=data.image;$('result').replaceChildren(img);$('download').href=data.image;$('downloads').classList.remove('hidden');$('status').className='ok';$('status').textContent='Tạo ảnh thành công!';
  }catch(e){$('status').className='error';$('status').textContent='Không tạo được ảnh: '+e.message}finally{active=false;$('generate').disabled=false}
 });
 })();
+let aiAuthenticated = false;
+
+async function checkAIAuth() {
+  try {
+    const res = await fetch("/api/ai-auth/status", {
+      credentials: "same-origin",
+      cache: "no-store"
+    });
+    const data = await res.json();
+    aiAuthenticated = res.ok && data.authenticated === true;
+  } catch {
+    aiAuthenticated = false;
+  }
+  updateAIAuthUI();
+}
+
+function updateAIAuthUI() {
+  $("aiLoginForm").classList.toggle("hidden", aiAuthenticated);
+  $("aiLogoutBtn").classList.toggle("hidden", !aiAuthenticated);
+  $("aiAuthStatus").textContent = aiAuthenticated
+    ? "Đã đăng nhập AI. Bạn có thể tạo ảnh."
+    : "Chưa đăng nhập AI.";
+}
+
+$("aiLoginBtn").addEventListener("click", async () => {
+  const key = $("aiLoginKey").value.trim();
+
+  if (!key) {
+    $("aiAuthStatus").textContent = "Vui lòng nhập khóa.";
+    return;
+  }
+
+  $("aiLoginBtn").disabled = true;
+
+  try {
+    const res = await fetch("/api/ai-auth/login", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key })
+    });
+
+    if (!res.ok) throw new Error("Đăng nhập thất bại");
+
+    $("aiLoginKey").value = "";
+    await checkAIAuth();
+  } catch (err) {
+    $("aiAuthStatus").textContent = err.message;
+  } finally {
+    $("aiLoginBtn").disabled = false;
+  }
+});
+
+$("aiLogoutBtn").addEventListener("click", async () => {
+  try {
+    const res = await fetch("/api/ai-auth/logout", {
+      method: "POST",
+      credentials: "same-origin"
+    });
+
+    if (!res.ok) throw new Error("Đăng xuất thất bại");
+    await checkAIAuth();
+  } catch (err) {
+    $("aiAuthStatus").textContent = err.message;
+  }
+});
+
+checkAIAuth();
+
 </script></body></html>
