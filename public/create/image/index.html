@@ -138,4 +138,9 @@ $("aiLogoutBtn").addEventListener("click", async () => {
 
 checkAIAuth();
 
+window.addEventListener("error", function(e) {
+    const el = document.getElementById("aiAuthStatus");
+    if (el) el.textContent = "JS ERROR: " + e.message;
+});
+
 </script></body></html>
