@@ -52,8 +52,9 @@
 <section id="videoPanel" class="panel hidden"><h2>Video Studio</h2><p>Giao diện video đã được chuẩn bị. Để tạo video thực sự, VELTRIA cần tích hợp một API video hoặc máy chủ GPU chạy model video.</p><label for="videoMode">Chế độ</label><select id="videoMode"><option>Text to Video</option><option>Image to Video</option></select><label for="videoPrompt">Prompt video</label><textarea id="videoPrompt" placeholder="Mô tả chuyển động, góc máy, ánh sáng..."></textarea><label for="videoSource">Ảnh nguồn (Image to Video)</label><input id="videoSource" type="file" accept="image/*"><p class="hint">Chưa kết nối video engine. Không tính phí hoặc gửi dữ liệu.</p><button disabled type="button">Generate Video — Chưa khả dụng</button></section>
 </main>
 <script>
+const $ = id => document.getElementById(id);
 (()=>{'use strict';
-const $=id=>document.getElementById(id), imageTab=$('imageTab'),videoTab=$('videoTab');
+const imageTab=$('imageTab'),videoTab=$('videoTab');
 function tab(video){$('imagePanel').classList.toggle('hidden',video);$('videoPanel').classList.toggle('hidden',!video);imageTab.classList.toggle('active',!video);videoTab.classList.toggle('active',video)}
 imageTab.addEventListener('click',()=>tab(false));videoTab.addEventListener('click',()=>tab(true));
 let active=false;
@@ -61,9 +62,9 @@ $('clear').addEventListener('click',()=>{$('result').replaceChildren(document.cr
 $('generate').addEventListener('click',async()=>{
  if(active)return;const prompt=$('prompt').value.trim(),key=$('key').value.trim();
  if(prompt.length<3){$('status').textContent='Vui lòng nhập prompt tối thiểu 3 ký tự.';return}
- if(!aiAuthenticated){$('status').textContent='Vui lòng đăng nhập AI trước.';return}
+ if(!aiAuthenticated && !key){$('status').textContent='Vui lòng đăng nhập AI hoặc nhập khóa cá nhân.';return}
  active=true;$('generate').disabled=true;$('status').className='hint';$('status').textContent='Đang tạo ảnh, vui lòng chờ...';$('downloads').classList.add('hidden');
- try{const res=await fetch('/api/generate-image',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',},body:JSON.stringify({prompt}),cache:'no-store'});
+ try{const res=await fetch('/api/generate-image',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',...(key ? {'X-Veltria-Key':key} : {})},body:JSON.stringify({prompt}),cache:'no-store'});
  const data=await res.json().catch(()=>({}));if(!res.ok||!data.ok||!data.image)throw new Error(data.error||('HTTP '+res.status));
  const img=document.createElement('img');img.alt='Ảnh do VELTRIA AI tạo';img.src=data.image;$('result').replaceChildren(img);$('download').href=data.image;$('downloads').classList.remove('hidden');$('status').className='ok';$('status').textContent='Tạo ảnh thành công!';
  }catch(e){$('status').className='error';$('status').textContent='Không tạo được ảnh: '+e.message}finally{active=false;$('generate').disabled=false}
