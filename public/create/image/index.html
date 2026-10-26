@@ -43,6 +43,27 @@
 </div>
 <div><label for="model">Model</label><select id="model"><option value="flux">FLUX.1 Schnell — Cloudflare AI</option></select></div>
 
+
+<div class="grid">
+  <div>
+    <label for="promptStyle">Phong cách AI</label>
+    <select id="promptStyle">
+      <option value="anime">Anime</option>
+      <option value="realistic">Realistic</option>
+      <option value="cinematic">Cinematic</option>
+      <option value="fantasy">Fantasy</option>
+    </select>
+  </div>
+  <div>
+    <label>Công cụ Prompt</label>
+    <button id="optimizePrompt" type="button">
+      ✨ Tối ưu Prompt
+    </button>
+  </div>
+</div>
+<p id="promptHint" class="hint">
+  Nhập tiếng Việt hoặc tiếng Anh, sau đó bấm Tối ưu Prompt.
+</p>
 <label for="prompt">Prompt tạo ảnh</label><textarea id="prompt" maxlength="2000" placeholder="A futuristic city at night, cinematic lighting, highly detailed..."></textarea>
 <div class="actions"><button id="generate" type="button">✦ Generate Image</button><button id="clear" type="button" style="background:#393045">Xóa kết quả</button></div>
 <div id="status" role="status" aria-live="polite" class="hint" style="margin-top:14px">Sẵn sàng tạo ảnh.</div>
@@ -152,4 +173,32 @@ window.addEventListener("error", function(e) {
     if (el) el.textContent = "JS ERROR: " + e.message;
 });
 
-</script></body></html>
+</script>
+<script src="/create/image/smart-prompt.js"></script>
+<script>
+document.getElementById("optimizePrompt").addEventListener("click", function () {
+  const input = document.getElementById("prompt");
+  const style = document.getElementById("promptStyle").value;
+
+  if (!input.value.trim()) {
+    document.getElementById("promptHint").textContent =
+      "Vui lòng nhập prompt trước.";
+    return;
+  }
+
+  if (!window.VeltriaSmartPrompt) {
+    document.getElementById("promptHint").textContent =
+      "Không tải được Smart Prompt Engine.";
+    return;
+  }
+
+  input.value = window.VeltriaSmartPrompt.optimize(
+    input.value,
+    style
+  );
+
+  document.getElementById("promptHint").textContent =
+    "Đã tối ưu prompt. Bạn có thể chỉnh sửa trước khi tạo ảnh.";
+});
+</script>
+</body></html>
