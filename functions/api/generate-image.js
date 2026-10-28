@@ -69,10 +69,37 @@ export async function onRequestPost({ request, env }) {
 
   // 6. Goi AI tao anh
   try {
+    const supportedModels = {
+      "flux-schnell": "@cf/black-forest-labs/flux-1-schnell",
+      "sdxl-lightning": "@cf/bytedance/stable-diffusion-xl-lightning"
+    };
+
+    const requestedModel = String(body.model || "flux-schnell");
+    const selectedModel = supportedModels[requestedModel];
+
+    if (!selectedModel) {
+      return json({
+        ok: false,
+        error: "MODEL_NOT_SUPPORTED"
+      }, 400);
+    }
+
     const result = await env.AI.run(
-      "@cf/black-forest-labs/flux-1-schnell",
+      selectedModel,
       { prompt }
     );
+
+    if (requestedModel === "sdxl-lightning") {
+      const bytes = new Uint8Array(await new Response(result).arrayBuffer());
+      let binary = "";
+      for (let i = 0; i < bytes.length; i += 8192) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+      }
+      return json({
+        ok: true,
+        image: "data:image/png;base64," + btoa(binary)
+      });
+    }
 
     if (!result?.image) {
       return json({

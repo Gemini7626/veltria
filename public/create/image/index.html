@@ -41,7 +41,7 @@
     </button>
   </div>
 </div>
-<div><label for="model">Model</label><select id="model"><option value="flux">FLUX.1 Schnell — Cloudflare AI</option></select></div>
+<div><label for="model">Model</label><select id="model"><option value="sdxl-lightning">SDXL Lightning - Cloudflare AI</option><option value="flux">FLUX.1 Schnell — Cloudflare AI</option></select></div>
 
 
 <div class="grid">
@@ -91,7 +91,7 @@ $('generate').addEventListener('click',async()=>{
  if(prompt.length<3){$('status').textContent='Vui lòng nhập prompt tối thiểu 3 ký tự.';return}
  if(!aiAuthenticated){$('status').textContent='Vui lòng đăng nhập AI hoặc nhập khóa cá nhân.';return}
  active=true;$('generate').disabled=true;$('status').className='hint';$('status').textContent='Đang tạo ảnh, vui lòng chờ...';$('downloads').classList.add('hidden');
- try{const res=await fetch('/api/generate-image',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt}),cache:'no-store'});
+ try{const res=await fetch('/api/generate-image',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,model:document.getElementById('model').value}),cache:'no-store'});
  const data=await res.json().catch(()=>({}));if(!res.ok||!data.ok||!data.image)throw new Error(data.error||('HTTP '+res.status));
  const img=document.createElement('img');img.alt='Ảnh do VELTRIA AI tạo';img.src=data.image;$('result').replaceChildren(img);$('download').href=data.image;$('downloads').classList.remove('hidden');$('status').className='ok';$('status').textContent='Tạo ảnh thành công!';
  }catch(e){$('status').className='error';$('status').textContent='Không tạo được ảnh: '+e.message}finally{active=false;$('generate').disabled=false}
