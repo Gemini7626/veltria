@@ -2,44 +2,71 @@
   "use strict";
 
   const styles = {
-    anime: "high quality anime illustration, detailed anime character design, clean line art, vibrant colors, expressive eyes",
-    realistic: "photorealistic photography, natural skin texture, realistic lighting, accurate anatomy, fine details",
-    cinematic: "cinematic composition, dramatic lighting, film still, depth of field, detailed environment",
-    fantasy: "fantasy concept art, magical atmosphere, intricate details, beautiful environment"
+    anime: "2D anime illustration, clean line art, cel shading, vibrant colors",
+    realistic: "photorealistic photograph, natural lighting, realistic textures, lifelike details",
+    cinematic: "cinematic film still, dramatic lighting, realistic environment, depth of field",
+    fantasy: "fantasy illustration, magical atmosphere, detailed environment, rich colors"
   };
 
-  const translations = [
-    [/chân thực|giống thật|người thật/gi, "photorealistic"],
-    [/hoạt hình/gi, "cartoon"],
-    [/dễ thương/gi, "cute"],
-    [/toàn thân/gi, "full body"],
-    [/chân dung/gi, "portrait"],
-    [/rừng/gi, "forest"],
-    [/thành phố/gi, "city"],
-    [/ban đêm/gi, "at night"],
-    [/ánh sáng/gi, "lighting"],
-    [/một nhân vật/gi, "exactly one character"],
-    [/không có người khác/gi, "no other people"]
+  const characters = [
+    {
+      pattern: /\b(naruto|uzumaki naruto)\b/i,
+      description: "Naruto Uzumaki, spiky blond hair, blue eyes, three whisker marks on each cheek, orange and black ninja outfit, Hidden Leaf forehead protector"
+    },
+    {
+      pattern: /\b(songoku|son goku|goku)\b/i,
+      description: "Son Goku from Dragon Ball, spiky black hair, orange martial arts gi, blue undershirt, blue wristbands"
+    },
+    {
+      pattern: /\b(luffy|monkey d luffy)\b/i,
+      description: "Monkey D. Luffy, black hair, straw hat, red vest, blue shorts"
+    }
   ];
 
   function optimize(prompt, style) {
-    let result = String(prompt || "").trim();
+    const original = String(prompt || "").trim();
+    if (!original) return "";
 
-    for (const [pattern, replacement] of translations) {
-      result = result.replace(pattern, replacement);
+    let result = original;
+
+    for (const character of characters) {
+      if (character.pattern.test(original)) {
+        result = character.description;
+        break;
+      }
     }
 
-    const selectedStyle = styles[style] || styles.anime;
+    const chibi = /\bchibi\b|dễ thương|cute/i.test(original);
 
-    return [
+    const vietnameseRules = [
+      [/một nhân vật|chỉ một người/gi, "exactly one character"],
+      [/toàn thân/gi, "full body"],
+      [/chân dung/gi, "portrait"],
+      [/trong rừng/gi, "in a forest"],
+      [/ban đêm/gi, "at night"],
+      [/đang chiến đấu/gi, "fighting pose"],
+      [/đang cười/gi, "smiling"]
+    ];
+
+    if (result === original) {
+      for (const [pattern, replacement] of vietnameseRules) {
+        result = result.replace(pattern, replacement);
+      }
+    }
+
+    const parts = [
       result,
-      selectedStyle,
+      chibi ? "chibi style, small body, large head, cute proportions" : "",
+      styles[style] || styles.anime,
       "high quality, detailed composition"
-    ].filter(Boolean).join(", ");
+    ];
+
+    if (/một nhân vật|chỉ một người|exactly one character/i.test(original)) {
+      parts.push("solo character, no additional characters");
+    }
+
+    return parts.filter(Boolean).join(", ").slice(0, 1000);
   }
 
-  window.VeltriaSmartPrompt = {
-    optimize,
-    styles
-  };
+  window.VeltriaSmartPrompt = { optimize, styles };
 })();

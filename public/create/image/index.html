@@ -64,7 +64,13 @@
 <p id="promptHint" class="hint">
   Nhập tiếng Việt hoặc tiếng Anh, sau đó bấm Tối ưu Prompt.
 </p>
-<label for="prompt">Prompt tạo ảnh</label><textarea id="prompt" maxlength="2000" placeholder="A futuristic city at night, cinematic lighting, highly detailed..."></textarea>
+
+<label for="originalPrompt">Ý tưởng gốc</label>
+<textarea id="originalPrompt"
+placeholder="Ví dụ: Naruto chibi, một nhân vật, đang cười"></textarea>
+
+<label for="prompt">Prompt đã tối ưu (có thể chỉnh sửa)</label>
+<textarea id="prompt" maxlength="2000" placeholder="A futuristic city at night, cinematic lighting, highly detailed..."></textarea>
 <div class="actions"><button id="generate" type="button">✦ Generate Image</button><button id="clear" type="button" style="background:#393045">Xóa kết quả</button></div>
 <div id="status" role="status" aria-live="polite" class="hint" style="margin-top:14px">Sẵn sàng tạo ảnh.</div>
 <div id="result" class="result">Ảnh AI sẽ xuất hiện tại đây.</div>
@@ -176,29 +182,35 @@ window.addEventListener("error", function(e) {
 </script>
 <script src="/create/image/smart-prompt.js"></script>
 <script>
-document.getElementById("optimizePrompt").addEventListener("click", function () {
-  const input = document.getElementById("prompt");
-  const style = document.getElementById("promptStyle").value;
 
-  if (!input.value.trim()) {
-    document.getElementById("promptHint").textContent =
-      "Vui lòng nhập prompt trước.";
+function optimizeFromOriginal() {
+  const original = document.getElementById("originalPrompt").value.trim();
+  const style = document.getElementById("promptStyle").value;
+  const output = document.getElementById("prompt");
+  const hint = document.getElementById("promptHint");
+
+  if (!original) {
+    hint.textContent = "Vui lòng nhập ý tưởng gốc.";
     return;
   }
 
   if (!window.VeltriaSmartPrompt) {
-    document.getElementById("promptHint").textContent =
-      "Không tải được Smart Prompt Engine.";
+    hint.textContent = "Không tải được Smart Prompt Engine.";
     return;
   }
 
-  input.value = window.VeltriaSmartPrompt.optimize(
-    input.value,
-    style
-  );
+  output.value = window.VeltriaSmartPrompt.optimize(original, style);
+  hint.textContent = "Đã tối ưu từ ý tưởng gốc.";
+}
 
-  document.getElementById("promptHint").textContent =
-    "Đã tối ưu prompt. Bạn có thể chỉnh sửa trước khi tạo ảnh.";
-});
+document.getElementById("optimizePrompt")
+  .addEventListener("click", optimizeFromOriginal);
+
+document.getElementById("promptStyle")
+  .addEventListener("change", function () {
+    if (document.getElementById("originalPrompt").value.trim()) {
+      optimizeFromOriginal();
+    }
+  });
 </script>
 </body></html>
