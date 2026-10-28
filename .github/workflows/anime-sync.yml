@@ -1,0 +1,24 @@
+name: VELTRIA Anime Sync
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Sync anime from AniList
+        env:
+          SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
+        run: |
+          test -n "$SYNC_SECRET" || exit 1
+          curl --fail-with-body --silent --show-error \
+            --max-time 90 \
+            --retry 2 \
+            -X POST \
+            -H "Authorization: Bearer $SYNC_SECRET" \
+            https://veltria.pages.dev/api/anime/sync
