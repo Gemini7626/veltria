@@ -10,6 +10,19 @@
 
   const characters = [
     {
+      pattern: /\b(boa hancock|pirate empress)\b/i,
+      description: "Boa Hancock from One Piece, long straight black hair, blue eyes, gold snake earrings, elegant pirate empress, original anime character design"
+    },
+    {
+      pattern: /\b(nefertari vivi|princess vivi|vivi)\b/i,
+      description: "Nefertari Vivi from One Piece, long wavy light blue hair, blue eyes, princess of Alabasta, original anime character design"
+    },
+    {
+      pattern: /\b(shirahoshi|princess shirahoshi)\b/i,
+      description: "Princess Shirahoshi from One Piece, giant mermaid princess, long flowing pink hair, large blue eyes, pink mermaid tail, original anime character design"
+    },
+
+    {
       pattern: /\b(naruto|uzumaki naruto)\b/i,
       description: "Naruto Uzumaki, spiky blond hair, blue eyes, three whisker marks on each cheek, orange and black ninja outfit, Hidden Leaf forehead protector"
     },
@@ -31,7 +44,7 @@
 
     for (const character of characters) {
       if (character.pattern.test(original)) {
-        result = character.description;
+        result = character.description + ', ' + original;
         break;
       }
     }
