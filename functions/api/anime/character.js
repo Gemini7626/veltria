@@ -41,7 +41,7 @@ export async function onRequestGet({ request }) {
     if (!response.ok) {
       return reply({
         ok: false,
-        error: "ANILIST_UNAVAILABLE"
+        error: "ANILIST_UNAVAILABLE", upstreamStatus: response.status
       }, 502);
     }
 
