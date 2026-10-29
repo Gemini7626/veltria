@@ -183,7 +183,7 @@ window.addEventListener("error", function(e) {
 <script src="/create/image/smart-prompt.js"></script>
 <script>
 
-function optimizeFromOriginal() {
+async function optimizeFromOriginal() {
   const original = document.getElementById("originalPrompt").value.trim();
   const style = document.getElementById("promptStyle").value;
   const output = document.getElementById("prompt");
@@ -199,7 +199,40 @@ function optimizeFromOriginal() {
     return;
   }
 
-  output.value = window.VeltriaSmartPrompt.optimize(original, style);
+  let optimized = window.VeltriaSmartPrompt.optimize(original, style);
+
+  if (style === "anime") {
+    const names = [
+      "Boa Hancock",
+      "Nefertari Vivi",
+      "Shirahoshi"
+    ];
+
+    const found = names.find(name =>
+      original.toLowerCase().includes(name.toLowerCase())
+    );
+
+    if (found) {
+      try {
+        const response = await fetch(
+          "/api/anime/lookup?name=" + encodeURIComponent(found)
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          const character = data.characters?.[0];
+
+          if (character?.description) {
+            optimized += ", " + character.description;
+          }
+        }
+      } catch (error) {
+        console.warn("Character lookup unavailable");
+      }
+    }
+  }
+
+  output.value = optimized;
   hint.textContent = "Đã tối ưu từ ý tưởng gốc.";
 }
 
